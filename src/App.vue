@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import AppHeader from '@/components/layout/AppHeader.vue'
+
+import AppSidebar from '@/components/layout/AppSidebar.vue'
 </script>
 
 <template>
-  <AppHeader/>
+  <AppSidebar/>
   <RouterView/>
 </template>
 
-<style scoped lang="scss">
-
+<style lang="scss">
+#app{
+  display: flex;
+  gap: 10px;
+}
 </style>
