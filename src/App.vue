@@ -1,16 +1,27 @@
 <script setup lang="ts">
 
 import AppSidebar from '@/components/layout/AppSidebar.vue'
+import { onMounted } from 'vue'
+import router from '@/router'
+
+onMounted(async() => {
+  await router.push('/')
+})
 </script>
 
 <template>
   <AppSidebar/>
-  <RouterView/>
+  <div id="content">
+    <RouterView/>
+  </div>
 </template>
 
 <style lang="scss">
 #app{
   display: flex;
   gap: 10px;
+}
+#content{
+  padding: 30px;
 }
 </style>

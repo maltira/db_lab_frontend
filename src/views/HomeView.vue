@@ -2,13 +2,12 @@
 
 <template>
   <div id="home-view">
-    hello
+    <h1>Государственная инспекция по маломерным судам</h1>
   </div>
 </template>
 
 <style scoped>
 #home-view {
-  padding: 30px;
   width: 100%;
 }
 </style>

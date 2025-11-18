@@ -2,14 +2,14 @@
 import { ref } from 'vue'
 
 const allTables = ref([
-  'Владельцы',
-  'История владения',
-  'Судоводители',
-  'Судна',
-  'Типы судов',
-  'Инспектора',
-  'Нарушения',
-  'ТО',
+  { route: "/table/owner", name: "Владельцы" },
+  { route: "/table/ownership", name: 'История владения' },
+  { route: "/table/skipper", name: "Судоводители" },
+  { route: "/table/ship", name: "Судна" },
+  { route: "/table/type", name: "Типы судов" },
+  { route: "/table/inspector", name: "Инспектора" },
+  { route: "/table/violation", name: "Нарушения" },
+  { route: "/table/inspection", name: "ТО" },
 ])
 const allQueries = ref([
   'Владельцы',
@@ -23,7 +23,7 @@ const allQueries = ref([
 ])
 const allForms = ref([])
 
-const selectedElement = ref({ block: 'tables', id: 0 })
+const selectedElement = ref({ block: 'tables', id: -1 })
 const isTablesOpen = ref(true)
 const isQueriesOpen = ref(false)
 const isFormsOpen = ref(false)
@@ -55,9 +55,9 @@ const selectElement = (block: string, id: number) => {
         />
       </div>
       <div class="block_items" v-if="isTablesOpen && allTables.length > 0">
-        <div class="item" v-for="(table, index) in allTables" :key="index" @click="selectElement('tables', index)" :class="{active: selectedElement.block === 'tables' && selectedElement.id === index}">
-          <p>{{ table }}</p>
-        </div>
+        <RouterLink :to="table.route" class="item" v-for="(table, index) in allTables" :key="index" @click="selectElement('tables', index)" :class="{active: selectedElement.block === 'tables' && selectedElement.id === index}">
+          <p>{{ table.name }}</p>
+        </RouterLink>
       </div>
       <p v-else-if="isTablesOpen && allTables.length === 0" class="empty_block">Здесь пусто</p>
     </div>
@@ -101,7 +101,7 @@ const selectElement = (block: string, id: number) => {
   display: flex;
   flex-direction: column;
   gap: 25px;
-  width: 300px;
+  min-width: 300px;
   min-height: 100vh;
   padding: 30px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
