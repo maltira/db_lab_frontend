@@ -23,7 +23,7 @@ const allQueries = ref([
 ])
 const allForms = ref([])
 
-const selectedElement = ref({ block: '', id: 0 })
+const selectedElement = ref({ block: 'tables', id: 0 })
 const isTablesOpen = ref(true)
 const isQueriesOpen = ref(false)
 const isFormsOpen = ref(false)
@@ -104,6 +104,7 @@ const selectElement = (block: string, id: number) => {
   width: 300px;
   min-height: 100vh;
   padding: 30px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 .sidebar_block {
   display: flex;
@@ -132,14 +133,14 @@ const selectElement = (block: string, id: number) => {
     gap: 4px;
 
     & > .item {
-      padding: 12px;
+      padding: 12px 20px;
       background: transparent;
       cursor: pointer;
       opacity: 0.7;
-      border-radius: 6px;
+      border-radius: 34px;
 
       &.active{
-        background: #bfffa9 !important;
+        background: #ccff6c !important;
         opacity: 0.99;
         pointer-events: none !important;
         cursor: default !important;
@@ -147,7 +148,7 @@ const selectElement = (block: string, id: number) => {
 
       &:hover {
         opacity: 0.99;
-        background: rgba(#bfffa9, 0.25);
+        background: rgba(#ccff6c, 0.25);
       }
 
       & > p {
