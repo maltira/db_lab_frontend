@@ -7,7 +7,4 @@
 </template>
 
 <style scoped>
-#home-view {
-  width: 100%;
-}
 </style>
