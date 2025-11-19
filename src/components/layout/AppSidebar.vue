@@ -11,22 +11,15 @@ const allTables = ref([
   { route: "/table/violation", name: "Нарушения" },
   { route: "/table/inspection", name: "ТО" },
 ])
-const allQueries = ref([
-  'Владельцы',
-  'История владения',
-  'Судоводители',
-  'Судна',
-  'Типы судов',
-  'Инспектора',
-  'Нарушения',
-  'ТО',
+const allQueries = ref([])
+const allForms = ref([
+  { route: "/", name: "Главная форма" },
 ])
-const allForms = ref([])
 
-const selectedElement = ref({ block: 'tables', id: -1 })
-const isTablesOpen = ref(true)
+const selectedElement = ref({ block: 'forms', id: 0 })
+const isTablesOpen = ref(false)
 const isQueriesOpen = ref(false)
-const isFormsOpen = ref(false)
+const isFormsOpen = ref(true)
 
 const toggleTables = () => {
   isTablesOpen.value = !isTablesOpen.value
@@ -87,9 +80,9 @@ const selectElement = (block: string, id: number) => {
         />
       </div>
       <div class="block_items" v-if="isFormsOpen && allForms.length > 0">
-        <div class="item" v-for="(form, index) in allForms" :key="index" @click="selectElement('forms', index)" :class="{active: selectedElement.block === 'forms' && selectedElement.id === index}">
-          <p>{{ form }}</p>
-        </div>
+        <RouterLink :to="form.route" class="item" v-for="(form, index) in allForms" :key="index" @click="selectElement('forms', index)" :class="{active: selectedElement.block === 'forms' && selectedElement.id === index}">
+          <p>{{ form.name }}</p>
+        </RouterLink>
       </div>
       <p v-else-if="isFormsOpen && allForms.length === 0" class="empty_block">Здесь пусто</p>
     </div>

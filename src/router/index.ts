@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
 import OwnerView from '@/views/tables/OwnerView.vue'
 import ShipView from '@/views/tables/ShipView.vue'
 import OwnershipView from '@/views/tables/OwnershipView.vue'
@@ -8,12 +7,13 @@ import InspectionView from '@/views/tables/InspectionView.vue'
 import SkipperView from '@/views/tables/SkipperView.vue'
 import ViolationView from '@/views/tables/ViolationView.vue'
 import ShipTypesView from '@/views/tables/ShipTypesView.vue'
+import OwnerDataForm from '@/views/forms/data/OwnerDataForm.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'Home',
-    component: HomeView
+    name: 'OwnerDataForm',
+    component: OwnerDataForm
   },
   {
     path: '/table/owner',
@@ -54,7 +54,7 @@ const routes: RouteRecordRaw[] = [
     path: '/table/type',
     name: 'TypeView',
     component: ShipTypesView
-  }
+  },
 ]
 
 export const router = createRouter({
