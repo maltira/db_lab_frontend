@@ -18,7 +18,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="table-container owner-content">
+  <div class="table-container">
     <h1>Таблица «Владельцы»</h1>
     <Skeleton height="300px" v-if="isLoading && !error"/>
     <p v-else-if="error">Произошла ошибка: {{error}}</p>
