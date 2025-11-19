@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import type { Owner } from '@/types/owner.ts'
 import { useOwnerStore } from '@/stores/owner.store.ts'
 import { storeToRefs } from 'pinia'
@@ -24,23 +24,54 @@ const type_of_person = ref('')
 const birthday = ref<Date | null>(null)
 const phone = ref('')
 
-const isCreateAvailable = () => {
-  return name.value &&
-    surname.value &&
-    address.value && type_of_person.value &&
-    birthday.value && phone.value
+const isCalendarOpen = ref(false)
+const containerRef = ref<HTMLElement | null>(null)
+const toggleCalendar = () => {
+  isCalendarOpen.value = !isCalendarOpen.value
 }
-
+const handleDateSelect = (date: Date | null) => {
+  if (date) {
+    // Закрываем календарь после выбора даты
+    isCalendarOpen.value = false
+  }
+}
+const handleClickOutside = (event: MouseEvent) => {
+  if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
+    isCalendarOpen.value = false
+  }
+}
+// Проверки для кнопки Сохранить
+const isCreateAvailable = () => {
+  return (
+    name.value &&
+    surname.value &&
+    address.value &&
+    type_of_person.value &&
+    birthday.value &&
+    phone.value
+  )
+}
 const isUpdateAvailable = () => {
-  return name.value && surname.value && patronymic.value && address.value && type_of_person.value && birthday.value && phone.value &&
-    (name.value != currentOwner.value?.name || surname.value != currentOwner.value?.surname
-      || patronymic.value != currentOwner.value.patronymic || address.value != currentOwner.value.address
-      || type_of_person.value != currentOwner.value.type_of_person || birthday.value != currentOwner.value.birth_date
-      || phone.value != currentOwner.value.phone)
+  return (
+    name.value &&
+    surname.value &&
+    patronymic.value &&
+    address.value &&
+    type_of_person.value &&
+    birthday.value &&
+    phone.value &&
+    (name.value != currentOwner.value?.name ||
+      surname.value != currentOwner.value?.surname ||
+      patronymic.value != currentOwner.value.patronymic ||
+      address.value != currentOwner.value.address ||
+      type_of_person.value != currentOwner.value.type_of_person ||
+      birthday.value != currentOwner.value.birth_date ||
+      phone.value != currentOwner.value.phone)
+  )
 }
 
 onMounted(async () => {
-  console.log(props.id)
+  document.addEventListener('click', handleClickOutside)
   if (props.id) {
     currentOwner.value = await fetchOne(props.id)
 
@@ -55,6 +86,9 @@ onMounted(async () => {
     }
   }
 })
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <template>
@@ -66,8 +100,8 @@ onMounted(async () => {
         <p>Вы находитесь на странице владельца</p>
       </div>
     </div>
-    <Skeleton v-if="isLoading && !error" height="300px"/>
-    <p v-else-if="error">Произошла ошибка: {{error}}</p>
+    <Skeleton v-if="isLoading && !error" height="300px" />
+    <p v-else-if="error">Произошла ошибка: {{ error }}</p>
     <div class="container" v-else>
       <div class="item">
         <p>Имя:</p>
@@ -85,12 +119,21 @@ onMounted(async () => {
         <p>Тип лица:</p>
         <input type="text" v-model="type_of_person" placeholder="Тип лица" />
       </div>
-      <div class="item">
+      <div class="item" :style="{ position: 'relative' }">
         <p>Дата рождения:</p>
-        <button>
-          {{birthday ? formatDate(birthday) : "Дата рождения"}}
-          <img src="/icons/calendar.svg" alt="calendar" width="16px">
+        <button @click="toggleCalendar" ref="containerRef">
+          {{ birthday ? formatDate(birthday) : 'Дата рождения' }}
+          <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>
+        <VDatePicker
+          :style="{ position: 'absolute', top: '85px', width: '100%' }"
+          v-if="isCalendarOpen"
+          @update:modelValue="handleDateSelect"
+          @close="isCalendarOpen = false"
+          v-model="birthday"
+          mode="date"
+          :max-date="new Date()"
+        />
       </div>
       <div class="item">
         <p>Телефон:</p>
@@ -103,7 +146,14 @@ onMounted(async () => {
     </div>
     <div class="actions">
       <button v-if="id">К суднам владельца</button>
-      <button class="save" :style="{display: id && isUpdateAvailable() || !id && isCreateAvailable() ? 'block' : 'none'}">Сохранить</button>
+      <button
+        class="save"
+        :style="{
+          display: (id && isUpdateAvailable()) || (!id && isCreateAvailable()) ? 'block' : 'none',
+        }"
+      >
+        Сохранить
+      </button>
     </div>
   </div>
 </template>
@@ -140,7 +190,7 @@ onMounted(async () => {
     }
   }
 }
-.container{
+.container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -154,7 +204,9 @@ onMounted(async () => {
     & > p {
       font-size: 16px;
     }
-    & > input, & > button, & > textarea {
+    & > input,
+    & > button,
+    & > textarea {
       font-size: 16px;
       padding: 15px 20px;
       width: 300px;
