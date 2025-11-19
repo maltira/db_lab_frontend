@@ -15,10 +15,44 @@ const ownerStore = useOwnerStore()
 const { fetchOne } = ownerStore
 const { isLoading, error } = storeToRefs(ownerStore)
 
+// Все input'ы
+const name = ref('')
+const surname = ref('')
+const patronymic = ref('')
+const address = ref('')
+const type_of_person = ref('')
+const birthday = ref<Date | null>(null)
+const phone = ref('')
+
+const isCreateAvailable = () => {
+  return name.value &&
+    surname.value &&
+    address.value && type_of_person.value &&
+    birthday.value && phone.value
+}
+
+const isUpdateAvailable = () => {
+  return name.value && surname.value && patronymic.value && address.value && type_of_person.value && birthday.value && phone.value &&
+    (name.value != currentOwner.value?.name || surname.value != currentOwner.value?.surname
+      || patronymic.value != currentOwner.value.patronymic || address.value != currentOwner.value.address
+      || type_of_person.value != currentOwner.value.type_of_person || birthday.value != currentOwner.value.birth_date
+      || phone.value != currentOwner.value.phone)
+}
+
 onMounted(async () => {
   console.log(props.id)
   if (props.id) {
     currentOwner.value = await fetchOne(props.id)
+
+    if (currentOwner.value) {
+      name.value = currentOwner.value.name
+      surname.value = currentOwner.value.surname
+      patronymic.value = currentOwner.value.patronymic || ''
+      address.value = currentOwner.value.address
+      type_of_person.value = currentOwner.value.type_of_person
+      birthday.value = currentOwner.value.birth_date
+      phone.value = currentOwner.value.phone
+    }
   }
 })
 </script>
@@ -37,39 +71,39 @@ onMounted(async () => {
     <div class="container" v-else>
       <div class="item">
         <p>Имя:</p>
-        <p>{{currentOwner?.name}}</p>
+        <input type="text" v-model="name" placeholder="Имя" />
       </div>
       <div class="item">
         <p>Фамилия:</p>
-        <p>{{currentOwner?.surname}}</p>
+        <input type="text" v-model="surname" placeholder="Фамилия" />
       </div>
       <div class="item">
         <p>Отчество:</p>
-        <p>{{currentOwner?.patronymic}}</p>
+        <input type="text" v-model="patronymic" placeholder="Отчество" />
       </div>
       <div class="item">
         <p>Тип лица:</p>
-        <p>{{currentOwner?.type_of_person}}</p>
+        <input type="text" v-model="type_of_person" placeholder="Тип лица" />
       </div>
       <div class="item">
         <p>Дата рождения:</p>
-        <p>{{currentOwner ? formatDate(currentOwner.birth_date) : ""}}</p>
+        <button>
+          {{birthday ? formatDate(birthday) : "Дата рождения"}}
+          <img src="/icons/calendar.svg" alt="calendar" width="16px">
+        </button>
       </div>
       <div class="item">
         <p>Телефон:</p>
-        <p>{{currentOwner?.phone}}</p>
+        <input type="text" v-model="phone" placeholder="Номер телефона" />
       </div>
       <div class="item">
         <p>Адрес:</p>
-        <p>{{currentOwner?.address}}</p>
+        <textarea type="text" v-model="address" placeholder="Адрес владельца" />
       </div>
     </div>
     <div class="actions">
-      <button>
-        <img src="/icons/add.svg" alt="add" />
-        Новая запись
-      </button>
-      <button>К суднам</button>
+      <button v-if="id">К суднам владельца</button>
+      <button class="save" :style="{display: id && isUpdateAvailable() || !id && isCreateAvailable() ? 'block' : 'none'}">Сохранить</button>
     </div>
   </div>
 </template>
@@ -119,13 +153,25 @@ onMounted(async () => {
 
     & > p {
       font-size: 16px;
+    }
+    & > input, & > button, & > textarea {
+      font-size: 16px;
+      padding: 15px 20px;
+      width: 300px;
+      background: rgba(gray, 0.1);
+      border-radius: 4px;
 
-      &:last-child{
-        padding: 15px 20px;
-        width: 300px;
-        background: rgba(gray, 0.1);
-        border-radius: 4px;
-      }
+      text-align: start;
+      font-weight: 400;
+    }
+
+    & > textarea {
+      width: 400px;
+    }
+    & > button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
   }
 }
