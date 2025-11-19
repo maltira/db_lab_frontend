@@ -12,6 +12,13 @@ class OwnerApi {
     })
     return response.json()
   }
+
+  async fetchOne(id: string): Promise<Owner | ErrorResponse> {
+    const response = await fetch(`${this.baseURL}/owner/${id}`, {
+      method: 'GET',
+    })
+    return response.json()
+  }
 }
 
 export const ownerService = new OwnerApi();

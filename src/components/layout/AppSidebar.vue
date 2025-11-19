@@ -14,6 +14,7 @@ const allTables = ref([
 const allQueries = ref([])
 const allForms = ref([
   { route: "/", name: "Главная форма" },
+  { route: '/form/input/owner', name: "Форма владельца"}
 ])
 
 const selectedElement = ref({ block: 'forms', id: 0 })

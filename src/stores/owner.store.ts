@@ -24,10 +24,33 @@ export const useOwnerStore = defineStore('owner', {
         }
 
         this.owners = response
+        console.log(this.owners)
         return response
       }
       catch {
         this.error = "Ошибка получения данных о владельцах"
+        return null
+      }
+      finally {
+        this.isLoading = false
+      }
+    },
+    async fetchOne(id: string): Promise<Owner | null> {
+      try {
+        this.isLoading = true
+        this.error = null
+
+        const response: Owner | ErrorResponse = await ownerService.fetchOne(id)
+
+        if (isErrorResponse(response)) {
+          this.error = response.error
+          return null
+        }
+
+        return response
+      }
+      catch {
+        this.error = "Не удалось получить информацию о пользователе"
         return null
       }
       finally {

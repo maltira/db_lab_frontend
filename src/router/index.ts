@@ -8,6 +8,7 @@ import SkipperView from '@/views/tables/SkipperView.vue'
 import ViolationView from '@/views/tables/ViolationView.vue'
 import ShipTypesView from '@/views/tables/ShipTypesView.vue'
 import OwnerDataForm from '@/views/forms/data/OwnerDataForm.vue'
+import OwnerInputForm from '@/views/forms/input/OwnerInputForm.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -55,6 +56,12 @@ const routes: RouteRecordRaw[] = [
     name: 'TypeView',
     component: ShipTypesView
   },
+  {
+    path: '/form/input/owner/:id?',
+    name: 'OwnerInputForm',
+    component: OwnerInputForm,
+    props: true
+  }
 ]
 
 export const router = createRouter({

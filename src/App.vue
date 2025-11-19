@@ -19,7 +19,6 @@ onMounted(async() => {
 <style lang="scss">
 #app{
   display: flex;
-  gap: 10px;
 }
 #content{
   padding: 30px;
