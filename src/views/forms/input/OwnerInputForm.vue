@@ -12,7 +12,7 @@ const props = defineProps<Props>()
 const currentOwner = ref<Owner | null>(null)
 
 const ownerStore = useOwnerStore()
-const { fetchOne } = ownerStore
+const { fetchOne, update } = ownerStore
 const { isLoading, error } = storeToRefs(ownerStore)
 
 // Все input'ы
@@ -20,7 +20,7 @@ const name = ref('')
 const surname = ref('')
 const patronymic = ref('')
 const address = ref('')
-const type_of_person = ref('')
+const type_of_person = ref<'Физическое' | 'Юридическое' | null>(null)
 const birthday = ref<Date | null>(null)
 const phone = ref('')
 
@@ -31,7 +31,6 @@ const toggleCalendar = () => {
 }
 const handleDateSelect = (date: Date | null) => {
   if (date) {
-    // Закрываем календарь после выбора даты
     isCalendarOpen.value = false
   }
 }
@@ -45,6 +44,7 @@ const isCreateAvailable = () => {
   return (
     name.value &&
     surname.value &&
+    patronymic.value &&
     address.value &&
     type_of_person.value &&
     birthday.value &&
@@ -68,6 +68,35 @@ const isUpdateAvailable = () => {
       birthday.value != currentOwner.value.birth_date ||
       phone.value != currentOwner.value.phone)
   )
+}
+
+const saveOwner = async () => {
+  const req: Owner = {
+    id: '',
+    name: name.value,
+    surname: surname.value,
+    patronymic: patronymic.value,
+    address: address.value,
+    type_of_person: type_of_person.value!,
+    birth_date: birthday.value!,
+    phone: phone.value,
+  }
+
+  if (props.id) {
+    req.id = props.id
+    if (isUpdateAvailable()) {
+      console.log(req)
+      await update(req)
+      if (error.value) {
+        console.error(error)
+      } else {
+        console.log('Запись обновлена')
+      }
+    }
+  } else {
+    if (isCreateAvailable()) {
+    }
+  }
 }
 
 onMounted(async () => {
@@ -126,10 +155,13 @@ onUnmounted(() => {
           <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>
         <VDatePicker
-          :style="{ position: 'absolute', top: '85px', width: '100%' }"
-          v-if="isCalendarOpen"
+          :style="{
+            position: 'absolute',
+            top: '85px',
+            width: '100%',
+            display: isCalendarOpen ? 'block' : 'none',
+          }"
           @update:modelValue="handleDateSelect"
-          @close="isCalendarOpen = false"
           v-model="birthday"
           mode="date"
           :max-date="new Date()"
@@ -147,6 +179,7 @@ onUnmounted(() => {
     <div class="actions">
       <button v-if="id">К суднам владельца</button>
       <button
+        @click="saveOwner"
         class="save"
         :style="{
           display: (id && isUpdateAvailable()) || (!id && isCreateAvailable()) ? 'block' : 'none',

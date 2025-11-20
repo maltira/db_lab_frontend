@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { ErrorResponse } from '@/types/dto/error.dto.ts'
+import type { ErrorResponse, MessageResponse } from '@/types/dto/error.dto.ts'
 import { isErrorResponse } from '@/utils/response_type.ts'
 import type { Owner } from '@/types/owner.ts'
 import { ownerService } from '@/api/owner.api.ts'
@@ -24,7 +24,6 @@ export const useOwnerStore = defineStore('owner', {
         }
 
         this.owners = response
-        console.log(this.owners)
         return response
       }
       catch {
@@ -51,6 +50,28 @@ export const useOwnerStore = defineStore('owner', {
       }
       catch {
         this.error = "Не удалось получить информацию о пользователе"
+        return null
+      }
+      finally {
+        this.isLoading = false
+      }
+    },
+    async update(req: Owner): Promise<boolean | null> {
+      try {
+        this.isLoading = true
+        this.error = null
+
+        const response: MessageResponse | ErrorResponse = await ownerService.updateOwner(req)
+
+        if (isErrorResponse(response)) {
+          this.error = response.error
+          return null
+        }
+
+        return true
+      }
+      catch (e) {
+        this.error = `Неудачная попытка обновить владельца: ${e}`
         return null
       }
       finally {

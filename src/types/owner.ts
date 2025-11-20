@@ -7,5 +7,5 @@ export interface Owner {
   address: string;
   birth_date: Date;
   phone: string;
-  type_of_person: 'legal' | 'private';
+  type_of_person: 'Физическое' | 'Юридическое';
 }

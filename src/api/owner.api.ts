@@ -1,5 +1,5 @@
 import config from '@/config'
-import type { ErrorResponse } from '@/types/dto/error.dto.ts'
+import type { ErrorResponse, MessageResponse } from '@/types/dto/error.dto.ts'
 import type { Owner } from '@/types/owner.ts'
 
 class OwnerApi {
@@ -16,6 +16,15 @@ class OwnerApi {
   async fetchOne(id: string): Promise<Owner | ErrorResponse> {
     const response = await fetch(`${this.baseURL}/owner/${id}`, {
       method: 'GET',
+    })
+    return response.json()
+  }
+
+  async updateOwner(req: Owner): Promise<MessageResponse | ErrorResponse> {
+    const response = await fetch(`${this.baseURL}/owner`, {
+      method: 'PUT',
+      credentials: "include",
+      body: JSON.stringify(req)
     })
     return response.json()
   }
