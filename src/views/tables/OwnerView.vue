@@ -11,9 +11,7 @@ const { fetchOwners } = ownerStore
 const { owners, isLoading, error } = storeToRefs(ownerStore)
 
 onMounted(async () => {
-  if (owners.value.length === 0) {
-    await fetchOwners()
-  }
+  await fetchOwners()
 })
 </script>
 

@@ -3,6 +3,7 @@
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import { onMounted } from 'vue'
 import router from '@/router'
+import Notification from '@/components/ui/Notification.vue'
 
 onMounted(async() => {
   await router.push('/')
@@ -14,6 +15,7 @@ onMounted(async() => {
   <div id="content">
     <RouterView/>
   </div>
+  <Notification/>
 </template>
 
 <style lang="scss">

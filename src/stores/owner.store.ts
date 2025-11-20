@@ -3,6 +3,7 @@ import type { ErrorResponse, MessageResponse } from '@/types/dto/error.dto.ts'
 import { isErrorResponse } from '@/utils/response_type.ts'
 import type { Owner } from '@/types/owner.ts'
 import { ownerService } from '@/api/owner.api.ts'
+import type { OwnerCreateRequest } from '@/types/dto/owner.dto.ts'
 
 export const useOwnerStore = defineStore('owner', {
   state: () => ({
@@ -72,6 +73,28 @@ export const useOwnerStore = defineStore('owner', {
       }
       catch (e) {
         this.error = `Неудачная попытка обновить владельца: ${e}`
+        return null
+      }
+      finally {
+        this.isLoading = false
+      }
+    },
+    async create(req: OwnerCreateRequest): Promise<boolean | null> {
+      try {
+        this.isLoading = true
+        this.error = null
+
+        const response: MessageResponse | ErrorResponse = await ownerService.createOwner(req)
+
+        if (isErrorResponse(response)) {
+          this.error = response.error
+          return null
+        }
+
+        return true
+      }
+      catch (e) {
+        this.error = `Неудачная попытка добавить владельца: ${e}`
         return null
       }
       finally {

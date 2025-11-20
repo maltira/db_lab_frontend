@@ -6,6 +6,7 @@ export interface ShipType {
   name: string;
 }
 export interface Ship {
+  id: string;
   name: string;
   type_id: string;
   owner_id: string;

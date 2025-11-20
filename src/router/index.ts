@@ -9,6 +9,8 @@ import ViolationView from '@/views/tables/ViolationView.vue'
 import ShipTypesView from '@/views/tables/ShipTypesView.vue'
 import OwnerDataForm from '@/views/forms/data/OwnerDataForm.vue'
 import OwnerInputForm from '@/views/forms/input/OwnerInputForm.vue'
+import ShipDataForm from '@/views/forms/data/ShipDataForm.vue'
+import InspectorDataForm from '@/views/forms/data/InspectorDataForm.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -56,12 +58,26 @@ const routes: RouteRecordRaw[] = [
     name: 'TypeView',
     component: ShipTypesView
   },
+
+  // ФВВ
   {
     path: '/form/input/owner/:id?',
     name: 'OwnerInputForm',
     component: OwnerInputForm,
+    props: true,
+  },
+  // ФАД
+  {
+    path: '/form/data/ships/:id?',
+    name: 'ShipDataForm',
+    component: ShipDataForm,
     props: true
-  }
+  },
+  {
+    path: '/form/data/inspectors',
+    name: 'InspectorDataForm',
+    component: InspectorDataForm,
+  },
 ]
 
 export const router = createRouter({

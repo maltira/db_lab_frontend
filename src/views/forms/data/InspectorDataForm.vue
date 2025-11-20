@@ -1,31 +1,30 @@
 <script setup lang="ts">
 
-import { useOwnerStore } from '@/stores/owner.store.ts'
 import { storeToRefs } from 'pinia'
 import { onMounted } from 'vue'
 import Skeleton from '@/components/ui/Skeleton.vue'
-import { formatDate } from '@/utils/date_format.ts'
 import router from '@/router'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
+import { useInspectorStore } from '@/stores/inspector.store.ts'
 
 const sidebarStore = useSidebarStore()
 const { selectedRoute } = storeToRefs(sidebarStore)
 
-const ownerStore = useOwnerStore()
-const { fetchOwners } = ownerStore
-const { owners, isLoading, error } = storeToRefs(ownerStore)
+const insStore = useInspectorStore()
+const { fetchInspectors } = insStore
+const { inspectors, isLoading, error } = storeToRefs(insStore)
 
 const reloadOwners = async () => {
-  await fetchOwners()
+  await fetchInspectors()
 }
 
-const goToOwner = async (id: string) => {
-  await router.push(`/form/input/owner/${id}`)
+const goToInspector = async (id: string) => {
+  await router.push(`/form/input/inspector/${id}`)
 }
 
 onMounted(async () => {
-  await fetchOwners()
-  selectedRoute.value = { block: "forms", id: 0}
+  await fetchInspectors()
+  selectedRoute.value = { block: "forms", id: 3}
 })
 </script>
 
@@ -35,7 +34,7 @@ onMounted(async () => {
       <img src="/img/gims.png" alt="logo">
       <div class="text">
         <h1>ГИМС РФ</h1>
-        <p>Вы находитесь на странице с владельцами суден</p>
+        <p>Вы находитесь на странице с инспекторами</p>
       </div>
     </div>
     <Skeleton height="300px" v-if="isLoading && !error"/>
@@ -46,25 +45,21 @@ onMounted(async () => {
         <td>Имя</td>
         <td>Фамилия</td>
         <td>Отчество</td>
-        <td>Адрес</td>
-        <td>Дата рождения</td>
+        <td>Пост</td>
         <td>Номер телефона</td>
-        <td>Тип лица</td>
       </tr>
       </thead>
       <tbody>
       <tr
-        v-for="(owner, i) in owners"
+        v-for="(ins, i) in inspectors"
         :key="i"
-        @click="goToOwner(owner.id)"
+        @click="goToInspector(ins.id)"
       >
-        <td>{{owner.name}}</td>
-        <td>{{owner.surname}}</td>
-        <td>{{owner.patronymic || ""}}</td>
-        <td class="address">{{owner.address}}</td>
-        <td>{{formatDate(owner.birth_date)}}</td>
-        <td>{{owner.phone}}</td>
-        <td>{{owner.type_of_person}}</td>
+        <td>{{ins.name}}</td>
+        <td>{{ins.surname}}</td>
+        <td>{{ins.patronymic || ""}}</td>
+        <td>{{ins.post}}</td>
+        <td>{{ins.phone}}</td>
       </tr>
       </tbody>
     </table>
@@ -73,7 +68,7 @@ onMounted(async () => {
         <img src="/icons/add.svg" alt="add">
         Новая запись
       </button>
-      <button v-if="owners.length > 0">
+      <button v-if="inspectors.length > 0">
         <img src="/icons/search.svg" alt="search">
         Найти запись
       </button>
@@ -81,7 +76,6 @@ onMounted(async () => {
         <img src="/icons/reload.svg" alt="reload">
         Обновить данные
       </button>
-      <button @click="router.push('/form/data/inspectors')">Форма инспекторов</button>
     </div>
   </div>
 </template>
@@ -93,7 +87,7 @@ onMounted(async () => {
   gap: 20px;
   position: relative;
   padding-bottom: 100px;
-  
+
   & > .title {
     display: flex;
     flex-direction: column;

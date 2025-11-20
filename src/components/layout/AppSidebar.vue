@@ -1,23 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useSidebarStore } from '@/stores/sidebar.store.ts'
+import { storeToRefs } from 'pinia'
 
-const allTables = ref([
-  { route: "/table/owner", name: "Владельцы" },
-  { route: "/table/ownership", name: 'История владения' },
-  { route: "/table/skipper", name: "Судоводители" },
-  { route: "/table/ship", name: "Судна" },
-  { route: "/table/type", name: "Типы судов" },
-  { route: "/table/inspector", name: "Инспектора" },
-  { route: "/table/violation", name: "Нарушения" },
-  { route: "/table/inspection", name: "ТО" },
-])
-const allQueries = ref([])
-const allForms = ref([
-  { route: "/", name: "Главная форма" },
-  { route: '/form/input/owner', name: "Форма владельца"}
-])
+const sidebarStore = useSidebarStore()
+const { allTables, allForms, allQueries, selectedRoute } = storeToRefs(sidebarStore)
 
-const selectedElement = ref({ block: 'forms', id: 0 })
 const isTablesOpen = ref(false)
 const isQueriesOpen = ref(false)
 const isFormsOpen = ref(true)
@@ -33,7 +21,7 @@ const toggleForms = () => {
 }
 
 const selectElement = (block: string, id: number) => {
-  selectedElement.value = {block: block, id: id}
+  selectedRoute.value = {block: block, id: id}
 }
 </script>
 
@@ -49,7 +37,7 @@ const selectElement = (block: string, id: number) => {
         />
       </div>
       <div class="block_items" v-if="isTablesOpen && allTables.length > 0">
-        <RouterLink :to="table.route" class="item" v-for="(table, index) in allTables" :key="index" @click="selectElement('tables', index)" :class="{active: selectedElement.block === 'tables' && selectedElement.id === index}">
+        <RouterLink :to="table.route" class="item" v-for="(table, index) in allTables" :key="index" @click="selectElement('tables', index)" :class="{active: selectedRoute.block === 'tables' && selectedRoute.id === index}">
           <p>{{ table.name }}</p>
         </RouterLink>
       </div>
@@ -65,7 +53,7 @@ const selectElement = (block: string, id: number) => {
         />
       </div>
       <div class="block_items" v-if="isQueriesOpen && allQueries.length > 0">
-        <div class="item" v-for="(query, index) in allQueries" :key="index" @click="selectElement('queries', index)" :class="{active: selectedElement.block === 'queries' && selectedElement.id === index}">
+        <div class="item" v-for="(query, index) in allQueries" :key="index" @click="selectElement('queries', index)" :class="{active: selectedRoute.block === 'queries' && selectedRoute.id === index}">
           <p>{{ query }}</p>
         </div>
       </div>
@@ -81,7 +69,7 @@ const selectElement = (block: string, id: number) => {
         />
       </div>
       <div class="block_items" v-if="isFormsOpen && allForms.length > 0">
-        <RouterLink :to="form.route" class="item" v-for="(form, index) in allForms" :key="index" @click="selectElement('forms', index)" :class="{active: selectedElement.block === 'forms' && selectedElement.id === index}">
+        <RouterLink :to="form.route" class="item" v-for="(form, index) in allForms" :key="index" @click="selectElement('forms', index)" :class="{active: selectedRoute.block === 'forms' && selectedRoute.id === index}">
           <p>{{ form.name }}</p>
         </RouterLink>
       </div>

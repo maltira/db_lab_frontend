@@ -5,14 +5,24 @@ import { useOwnerStore } from '@/stores/owner.store.ts'
 import { storeToRefs } from 'pinia'
 import Skeleton from '@/components/ui/Skeleton.vue'
 import { formatDate } from '@/utils/date_format.ts'
+import type { OwnerCreateRequest } from '@/types/dto/owner.dto.ts'
+import { useNotification } from '@/composables/useNotification.ts'
+import router from '@/router'
+import { useSidebarStore } from '@/stores/sidebar.store.ts'
+
+const { success, err } = useNotification()
+
 interface Props {
   id?: string // Если id передан, то парсим владельца, иначе создаем нового
 }
 const props = defineProps<Props>()
 const currentOwner = ref<Owner | null>(null)
 
+const sidebarStore = useSidebarStore()
+const { selectedRoute } = storeToRefs(sidebarStore)
+
 const ownerStore = useOwnerStore()
-const { fetchOne, update } = ownerStore
+const { fetchOne, update, create } = ownerStore
 const { isLoading, error } = storeToRefs(ownerStore)
 
 // Все input'ы
@@ -41,7 +51,7 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 // Проверки для кнопки Сохранить
 const isCreateAvailable = () => {
-  return (
+  return !props.id &&
     name.value &&
     surname.value &&
     patronymic.value &&
@@ -49,7 +59,6 @@ const isCreateAvailable = () => {
     type_of_person.value &&
     birthday.value &&
     phone.value
-  )
 }
 const isUpdateAvailable = () => {
   return (
@@ -60,46 +69,66 @@ const isUpdateAvailable = () => {
     type_of_person.value &&
     birthday.value &&
     phone.value &&
-    (name.value != currentOwner.value?.name ||
-      surname.value != currentOwner.value?.surname ||
-      patronymic.value != currentOwner.value.patronymic ||
-      address.value != currentOwner.value.address ||
-      type_of_person.value != currentOwner.value.type_of_person ||
-      birthday.value != currentOwner.value.birth_date ||
-      phone.value != currentOwner.value.phone)
+    (name.value !== currentOwner.value?.name ||
+      surname.value !== currentOwner.value?.surname ||
+      patronymic.value !== currentOwner.value?.patronymic ||
+      address.value !== currentOwner.value?.address ||
+      type_of_person.value !== currentOwner.value.type_of_person ||
+      formatDate(birthday.value) !== formatDate(currentOwner.value.birth_date) ||
+      phone.value !== currentOwner.value.phone)
   )
 }
 
 const saveOwner = async () => {
-  const req: Owner = {
-    id: '',
-    name: name.value,
-    surname: surname.value,
-    patronymic: patronymic.value,
-    address: address.value,
-    type_of_person: type_of_person.value!,
-    birth_date: birthday.value!,
-    phone: phone.value,
-  }
-
   if (props.id) {
-    req.id = props.id
+    const req: Owner = {
+      id: props.id,
+      name: name.value,
+      surname: surname.value,
+      patronymic: patronymic.value,
+      address: address.value,
+      type_of_person: type_of_person.value!,
+      birth_date: birthday.value!,
+      phone: phone.value,
+    }
     if (isUpdateAvailable()) {
-      console.log(req)
       await update(req)
       if (error.value) {
-        console.error(error)
+        err("Ошибка обновления записи", error.value)
       } else {
-        console.log('Запись обновлена')
+        success("Запись обновлена", "Вы успешно обновили запись")
+        currentOwner.value = await fetchOne(props.id)
       }
     }
   } else {
     if (isCreateAvailable()) {
+      const req: OwnerCreateRequest = {
+        name: name.value,
+        surname: surname.value,
+        patronymic: patronymic.value,
+        address: address.value,
+        type_of_person: type_of_person.value!,
+        birth_date: birthday.value!,
+        phone: phone.value,
+      }
+      await create(req)
+      if (error.value) {
+        err("Ошибка создание записи", error.value)
+      } else {
+        success("Запись добавлена", "Вы успешно создали новую запись")
+        name.value = ''
+        surname.value = ''
+        patronymic.value = ''
+        address.value = ''
+        birthday.value = null
+        phone.value = ''
+      }
     }
   }
 }
 
 onMounted(async () => {
+  selectedRoute.value = { block: "forms", id: 1}
   document.addEventListener('click', handleClickOutside)
   if (props.id) {
     currentOwner.value = await fetchOne(props.id)
@@ -126,7 +155,7 @@ onUnmounted(() => {
       <img src="/img/gims.png" alt="logo" />
       <div class="text">
         <h1>ГИМС РФ</h1>
-        <p>Вы находитесь на странице владельца</p>
+        <p>Вы находитесь на странице ввода данных владельца</p>
       </div>
     </div>
     <Skeleton v-if="isLoading && !error" height="300px" />
@@ -177,15 +206,15 @@ onUnmounted(() => {
       </div>
     </div>
     <div class="actions">
-      <button v-if="id">К суднам владельца</button>
+      <button v-if="id" @click="router.push(`/form/data/ships/${id}`)">К суднам владельца</button>
       <button
         @click="saveOwner"
         class="save"
         :style="{
-          display: (id && isUpdateAvailable()) || (!id && isCreateAvailable()) ? 'block' : 'none',
+          display: id && isUpdateAvailable() || isCreateAvailable() ? 'block' : 'none',
         }"
       >
-        Сохранить
+        {{id ? "Сохранить изменения" : "Добавить запись"}}
       </button>
     </div>
   </div>

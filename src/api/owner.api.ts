@@ -1,6 +1,7 @@
 import config from '@/config'
 import type { ErrorResponse, MessageResponse } from '@/types/dto/error.dto.ts'
 import type { Owner } from '@/types/owner.ts'
+import type { OwnerCreateRequest } from '@/types/dto/owner.dto.ts'
 
 class OwnerApi {
   private baseURL = config.apiUrl
@@ -23,6 +24,14 @@ class OwnerApi {
   async updateOwner(req: Owner): Promise<MessageResponse | ErrorResponse> {
     const response = await fetch(`${this.baseURL}/owner`, {
       method: 'PUT',
+      credentials: "include",
+      body: JSON.stringify(req)
+    })
+    return response.json()
+  }
+  async createOwner(req: OwnerCreateRequest): Promise<MessageResponse | ErrorResponse> {
+    const response = await fetch(`${this.baseURL}/owner`, {
+      method: 'POST',
       credentials: "include",
       body: JSON.stringify(req)
     })
