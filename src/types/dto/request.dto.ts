@@ -8,3 +8,11 @@ export interface OwnerCreateRequest {
   phone: string;
   type_of_person: string;
 }
+
+export interface InspectorCreateRequest {
+  name: string;
+  surname: string;
+  patronymic: string;
+  phone: string;
+  post: string;
+}

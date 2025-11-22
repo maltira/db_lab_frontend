@@ -3,7 +3,7 @@ import type { ErrorResponse, MessageResponse } from '@/types/dto/error.dto.ts'
 import { isErrorResponse } from '@/utils/response_type.ts'
 import type { Owner } from '@/types/owner.ts'
 import { ownerService } from '@/api/owner.api.ts'
-import type { OwnerCreateRequest } from '@/types/dto/owner.dto.ts'
+import type { OwnerCreateRequest } from '@/types/dto/request.dto.ts'
 
 export const useOwnerStore = defineStore('owner', {
   state: () => ({
@@ -57,7 +57,8 @@ export const useOwnerStore = defineStore('owner', {
         this.isLoading = false
       }
     },
-    async update(req: Owner): Promise<boolean | null> {
+
+    async Update(req: Owner): Promise<void> {
       try {
         this.isLoading = true
         this.error = null
@@ -66,20 +67,16 @@ export const useOwnerStore = defineStore('owner', {
 
         if (isErrorResponse(response)) {
           this.error = response.error
-          return null
         }
-
-        return true
       }
       catch (e) {
         this.error = `Неудачная попытка обновить владельца: ${e}`
-        return null
       }
       finally {
         this.isLoading = false
       }
     },
-    async create(req: OwnerCreateRequest): Promise<boolean | null> {
+    async Create(req: OwnerCreateRequest): Promise<void> {
       try {
         this.isLoading = true
         this.error = null
@@ -88,14 +85,27 @@ export const useOwnerStore = defineStore('owner', {
 
         if (isErrorResponse(response)) {
           this.error = response.error
-          return null
         }
-
-        return true
       }
       catch (e) {
         this.error = `Неудачная попытка добавить владельца: ${e}`
-        return null
+      }
+      finally {
+        this.isLoading = false
+      }
+    },
+    async Delete(id: string): Promise<void> {
+      try {
+        this.isLoading = true
+        this.error = null
+
+        const response: MessageResponse | ErrorResponse = await ownerService.deleteOwner(id)
+        if (isErrorResponse(response)) {
+          this.error = response.error
+        }
+      }
+      catch (e) {
+        this.error = `Неудачная попытка удалить владельца: ${e}`
       }
       finally {
         this.isLoading = false

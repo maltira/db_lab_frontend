@@ -20,8 +20,8 @@ const toggleForms = () => {
   isFormsOpen.value = !isFormsOpen.value
 }
 
-const selectElement = (block: string, id: number) => {
-  selectedRoute.value = {block: block, id: id}
+const selectElement = (block: 'tables' | 'queries' | 'forms', id: number) => {
+  selectedRoute.value = { block: block, id: id }
 }
 </script>
 
@@ -37,7 +37,7 @@ const selectElement = (block: string, id: number) => {
         />
       </div>
       <div class="block_items" v-if="isTablesOpen && allTables.length > 0">
-        <RouterLink :to="table.route" class="item" v-for="(table, index) in allTables" :key="index" @click="selectElement('tables', index)" :class="{active: selectedRoute.block === 'tables' && selectedRoute.id === index}">
+        <RouterLink :to="table.route" class="item" v-for="table in allTables" :key="table.id" @click="selectElement('tables', table.id)" :class="{active: selectedRoute.block === 'tables' && selectedRoute.id === table.id}">
           <p>{{ table.name }}</p>
         </RouterLink>
       </div>
@@ -53,7 +53,7 @@ const selectElement = (block: string, id: number) => {
         />
       </div>
       <div class="block_items" v-if="isQueriesOpen && allQueries.length > 0">
-        <div class="item" v-for="(query, index) in allQueries" :key="index" @click="selectElement('queries', index)" :class="{active: selectedRoute.block === 'queries' && selectedRoute.id === index}">
+        <div class="item" v-for="query in allQueries" :key="query.id" @click="selectElement('queries', query.id)" :class="{active: selectedRoute.block === 'queries' && selectedRoute.id === query.id}">
           <p>{{ query }}</p>
         </div>
       </div>
@@ -69,7 +69,7 @@ const selectElement = (block: string, id: number) => {
         />
       </div>
       <div class="block_items" v-if="isFormsOpen && allForms.length > 0">
-        <RouterLink :to="form.route" class="item" v-for="(form, index) in allForms" :key="index" @click="selectElement('forms', index)" :class="{active: selectedRoute.block === 'forms' && selectedRoute.id === index}">
+        <RouterLink :to="form.route" class="item" v-for="form in allForms" :key="form.id" @click="selectElement('forms', form.id)" :class="{active: selectedRoute.block === 'forms' && selectedRoute.id === form.id}">
           <p>{{ form.name }}</p>
         </RouterLink>
       </div>

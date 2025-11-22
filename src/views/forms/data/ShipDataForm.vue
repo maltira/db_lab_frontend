@@ -11,6 +11,8 @@ import { useSidebarStore } from '@/stores/sidebar.store.ts'
 const sidebarStore = useSidebarStore()
 const { selectedRoute } = storeToRefs(sidebarStore)
 
+const currentOwner = ref<string>("")
+
 interface Props {
   id?: string // Если id передан, то парсим судна владельца, иначе все
 }
@@ -36,9 +38,11 @@ const goToShip = async (id: string) => {
 
 onMounted(async () => {
   await fetchShips()
-  selectedRoute.value = { block: "forms", id: 2}
+  selectedRoute.value = { block: "forms", id: 3}
+
   if (props.id) {
     filteredShips.value = ships.value.filter((ship) => ship.Owner.id === props.id)
+    if (filteredShips.value[0]) currentOwner.value = filteredShips.value[0].Owner.surname
   } else {
     filteredShips.value = ships.value
   }
@@ -51,7 +55,7 @@ onMounted(async () => {
       <img src="/img/gims.png" alt="logo" />
       <div class="text">
         <h1>ГИМС РФ</h1>
-        <p>Вы находитесь на странице суден</p>
+        <p>Вы находитесь на странице суден {{currentOwner ? "владельца «" + currentOwner + "»" : ""}}</p>
       </div>
     </div>
     <Skeleton v-if="isLoading && !error" height="300px" />

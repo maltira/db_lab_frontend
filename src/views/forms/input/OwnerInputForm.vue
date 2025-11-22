@@ -5,7 +5,7 @@ import { useOwnerStore } from '@/stores/owner.store.ts'
 import { storeToRefs } from 'pinia'
 import Skeleton from '@/components/ui/Skeleton.vue'
 import { formatDate } from '@/utils/date_format.ts'
-import type { OwnerCreateRequest } from '@/types/dto/owner.dto.ts'
+import type { OwnerCreateRequest } from '@/types/dto/request.dto.ts'
 import { useNotification } from '@/composables/useNotification.ts'
 import router from '@/router'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
@@ -22,7 +22,7 @@ const sidebarStore = useSidebarStore()
 const { selectedRoute } = storeToRefs(sidebarStore)
 
 const ownerStore = useOwnerStore()
-const { fetchOne, update, create } = ownerStore
+const { fetchOne, Update, Create, Delete } = ownerStore
 const { isLoading, error } = storeToRefs(ownerStore)
 
 // Все input'ы
@@ -92,7 +92,7 @@ const saveOwner = async () => {
       phone: phone.value,
     }
     if (isUpdateAvailable()) {
-      await update(req)
+      await Update(req)
       if (error.value) {
         err("Ошибка обновления записи", error.value)
       } else {
@@ -111,22 +111,28 @@ const saveOwner = async () => {
         birth_date: birthday.value!,
         phone: phone.value,
       }
-      await create(req)
+      await Create(req)
       if (error.value) {
         err("Ошибка создание записи", error.value)
       } else {
         success("Запись добавлена", "Вы успешно создали новую запись")
-        name.value = ''
-        surname.value = ''
-        patronymic.value = ''
-        address.value = ''
-        birthday.value = null
-        phone.value = ''
+        await router.push("/")
       }
     }
   }
 }
+const deleteOwner = async () => {
+  if (props.id) {
+    await Delete(props.id)
 
+    if (error.value) {
+      err("Ошибка при удалении", error.value)
+    } else {
+      success("Успешное удаление", "Вы удалили запись о владельце")
+      await router.push("/")
+    }
+  }
+}
 onMounted(async () => {
   selectedRoute.value = { block: "forms", id: 1}
   document.addEventListener('click', handleClickOutside)
@@ -155,7 +161,7 @@ onUnmounted(() => {
       <img src="/img/gims.png" alt="logo" />
       <div class="text">
         <h1>ГИМС РФ</h1>
-        <p>Вы находитесь на странице ввода данных владельца</p>
+        <p>Вы находитесь на странице ввода данных владельца {{currentOwner ? "«" + currentOwner.surname + "»" : ""}}</p>
       </div>
     </div>
     <Skeleton v-if="isLoading && !error" height="300px" />
@@ -216,6 +222,7 @@ onUnmounted(() => {
       >
         {{id ? "Сохранить изменения" : "Добавить запись"}}
       </button>
+      <button v-if="id" class="delete" @click="deleteOwner">Удалить запись</button>
     </div>
   </div>
 </template>
@@ -315,6 +322,16 @@ onUnmounted(() => {
     &:hover {
       border-color: rgba(#6378ff, 1);
       background-color: rgba(#6378ff, 0.05);
+    }
+    &.delete{
+      border-color: rgba(red, 1);
+      background-color: rgba(red, 0.05);
+      color: red;
+      opacity: 0.6;
+
+      &:hover{
+        opacity: 0.99;
+      }
     }
   }
 }

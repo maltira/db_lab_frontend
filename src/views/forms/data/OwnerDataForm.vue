@@ -40,7 +40,7 @@ onMounted(async () => {
     </div>
     <Skeleton height="300px" v-if="isLoading && !error"/>
     <p v-else-if="error">Произошла ошибка: {{error}}</p>
-    <table v-else>
+    <table  v-else-if="owners.length > 0">
       <thead>
       <tr>
         <td>Имя</td>
@@ -68,6 +68,7 @@ onMounted(async () => {
       </tr>
       </tbody>
     </table>
+    <p v-else>Владельцы не найдены</p>
     <div class="actions">
       <button @click="router.push('/form/input/owner')">
         <img src="/icons/add.svg" alt="add">

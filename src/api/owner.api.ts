@@ -1,7 +1,7 @@
 import config from '@/config'
 import type { ErrorResponse, MessageResponse } from '@/types/dto/error.dto.ts'
 import type { Owner } from '@/types/owner.ts'
-import type { OwnerCreateRequest } from '@/types/dto/owner.dto.ts'
+import type { OwnerCreateRequest } from '@/types/dto/request.dto.ts'
 
 class OwnerApi {
   private baseURL = config.apiUrl
@@ -34,6 +34,12 @@ class OwnerApi {
       method: 'POST',
       credentials: "include",
       body: JSON.stringify(req)
+    })
+    return response.json()
+  }
+  async deleteOwner(id: string): Promise<MessageResponse | ErrorResponse> {
+    const response = await fetch(`${this.baseURL}/owner/${id}`, {
+      method: 'DELETE',
     })
     return response.json()
   }
