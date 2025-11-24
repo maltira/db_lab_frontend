@@ -7,7 +7,6 @@ export interface ShipType {
 }
 export interface Ship {
   id: string;
-  name: string;
   type_id: string;
   owner_id: string;
   skipper_id: string;
@@ -15,7 +14,7 @@ export interface Ship {
   registration_date: Date;
   registration_status: "Активный" | "Истёкший";
 
-  Type: ShipType;
-  Owner: Owner;
-  Skipper: Skipper;
+  Type?: ShipType;
+  Owner?: Owner;
+  Skipper?: Skipper;
 }

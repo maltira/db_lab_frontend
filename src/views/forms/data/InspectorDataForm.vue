@@ -6,6 +6,9 @@ import Skeleton from '@/components/ui/Skeleton.vue'
 import router from '@/router'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useInspectorStore } from '@/stores/inspector.store.ts'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const sidebarStore = useSidebarStore()
 const { selectedRoute } = storeToRefs(sidebarStore)
@@ -24,7 +27,8 @@ const goToInspector = async (id: string) => {
 
 onMounted(async () => {
   await fetchInspectors()
-  selectedRoute.value = { block: "forms", id: 4}
+  if (typeof route.meta.page_id === 'number')
+    selectedRoute.value = { block: "forms", id: route.meta.page_id}
 })
 </script>
 

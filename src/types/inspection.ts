@@ -9,6 +9,6 @@ export interface Inspection {
   result: 'Годно к эксплутации' | 'Годно с замечаниями' | 'Ограниченно годно' | 'Не годно к эксплутации';
   next_inspection_date: Date;
 
-  Inspector: Inspector;
-  Ship: Ship;
+  Inspector?: Inspector;
+  Ship?: Ship;
 }

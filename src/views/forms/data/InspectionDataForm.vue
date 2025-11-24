@@ -7,6 +7,10 @@ import { formatDate } from '@/utils/date_format.ts'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useInspectionStore } from '@/stores/inspection.store.ts'
 import type { Inspection } from '@/types/inspection.ts'
+import { useRoute } from 'vue-router'
+import router from '@/router'
+
+const route = useRoute()
 
 // Может прийти ID инспектора, либо ID судна, либо ничего
 interface Props {
@@ -31,12 +35,14 @@ const reloadInspections = async () => {
 }
 
 const goToInspection = async (id: string) => {
-
+  await router.push(`/form/input/inspection/${id}`)
 }
 
 onMounted(async () => {
   await fetchInspections()
-  selectedRoute.value = { block: "forms", id: 5}
+
+  if (typeof route.meta.page_id === 'number')
+    selectedRoute.value = { block: "forms", id: route.meta.page_id}
   if (props.inspector_id) {
     filteredInspections.value = inspections.value.filter((ins) => ins.Inspector.id === props.inspector_id)
     if (filteredInspections.value[0]) currentInspector.value = filteredInspections.value[0].Inspector.surname

@@ -9,8 +9,11 @@ import type { OwnerCreateRequest } from '@/types/dto/request.dto.ts'
 import { useNotification } from '@/composables/useNotification.ts'
 import router from '@/router'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
+import { useRoute } from 'vue-router'
 
 const { success, err } = useNotification()
+
+const route = useRoute()
 
 interface Props {
   id?: string // Если id передан, то парсим владельца, иначе создаем нового
@@ -134,7 +137,8 @@ const deleteOwner = async () => {
   }
 }
 onMounted(async () => {
-  selectedRoute.value = { block: "forms", id: 1}
+  if (typeof route.meta.page_id === 'number')
+    selectedRoute.value = { block: "forms", id: route.meta.page_id}
   document.addEventListener('click', handleClickOutside)
   if (props.id) {
     currentOwner.value = await fetchOne(props.id)

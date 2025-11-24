@@ -7,7 +7,9 @@ import Skeleton from '@/components/ui/Skeleton.vue'
 import { formatDate } from '@/utils/date_format.ts'
 import router from '@/router'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const sidebarStore = useSidebarStore()
 const { selectedRoute } = storeToRefs(sidebarStore)
 
@@ -25,7 +27,8 @@ const goToOwner = async (id: string) => {
 
 onMounted(async () => {
   await fetchOwners()
-  selectedRoute.value = { block: "forms", id: 0}
+  if (typeof route.meta.page_id === 'number')
+    selectedRoute.value = { block: "forms", id: route.meta.page_id}
 })
 </script>
 

@@ -7,7 +7,8 @@ import { onMounted, ref } from 'vue'
 import { formatDate } from '@/utils/date_format.ts'
 import type { Ship } from '@/types/ship.ts'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
-
+import { useRoute } from 'vue-router'
+const route = useRoute()
 const sidebarStore = useSidebarStore()
 const { selectedRoute } = storeToRefs(sidebarStore)
 
@@ -26,7 +27,7 @@ const filteredShips = ref<Ship[]>([])
 const reloadShips = async () => {
   await fetchShips()
   if (props.id) {
-    filteredShips.value = ships.value.filter((ship) => ship.Owner.id === props.id)
+    filteredShips.value = ships.value.filter((ship) => ship.Owner!.id === props.id)
   } else {
     filteredShips.value = ships.value
   }
@@ -38,11 +39,12 @@ const goToShip = async (id: string) => {
 
 onMounted(async () => {
   await fetchShips()
-  selectedRoute.value = { block: "forms", id: 3}
+  if (typeof route.meta.page_id === 'number')
+    selectedRoute.value = { block: "forms", id: route.meta.page_id}
 
   if (props.id) {
-    filteredShips.value = ships.value.filter((ship) => ship.Owner.id === props.id)
-    if (filteredShips.value[0]) currentOwner.value = filteredShips.value[0].Owner.surname
+    filteredShips.value = ships.value.filter((ship) => ship.Owner!.id === props.id)
+    if (filteredShips.value[0]) currentOwner.value = filteredShips.value[0].Owner!.surname
   } else {
     filteredShips.value = ships.value
   }
@@ -73,9 +75,9 @@ onMounted(async () => {
       </thead>
       <tbody>
         <tr v-for="(ship, i) in filteredShips" :key="i" @click="goToShip(ship.id)">
-          <td>{{ ship.Type.name }}</td>
-          <td>{{ ship.Owner.surname }}</td>
-          <td>{{ ship.Skipper.surname }}</td>
+          <td>{{ ship.Type!.name }}</td>
+          <td>{{ ship.Owner!.surname }}</td>
+          <td>{{ ship.Skipper!.surname }}</td>
           <td>{{ ship.ship_number }}</td>
           <td>{{ formatDate(ship.registration_date) }}</td>
           <td>{{ ship.registration_status }}</td>
@@ -84,7 +86,7 @@ onMounted(async () => {
     </table>
     <p v-else>У владельца нет суден</p>
     <div class="actions">
-      <button>
+      <button @click="router.push('/form/input/ship')">
         <img src="/icons/add.svg" alt="add" />
         Новая запись
       </button>

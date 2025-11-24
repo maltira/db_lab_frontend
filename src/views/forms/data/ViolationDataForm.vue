@@ -7,7 +7,9 @@ import { formatDate } from '@/utils/date_format.ts'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useViolationStore } from '@/stores/violation.store.ts'
 import type { Violation } from '@/types/violation.ts'
-
+import { useRoute } from 'vue-router'
+import router from '@/router'
+const route = useRoute()
 // Может прийти ID инспектора, либо ID судна, либо ничего
 interface Props {
   inspector_id?: string
@@ -31,12 +33,13 @@ const reloadViolations = async () => {
 }
 
 const goToViolation = async (id: string) => {
-
+  await router.push(`/form/input/violation/${id}`)
 }
 
 onMounted(async () => {
   await fetchViolations()
-  selectedRoute.value = { block: "forms", id: 6}
+  if (typeof route.meta.page_id === 'number')
+    selectedRoute.value = { block: "forms", id: route.meta.page_id}
   if (props.inspector_id) {
     filteredViolations.value = violations.value.filter((v) => v.Inspector.id === props.inspector_id)
     if (filteredViolations.value[0]) currentInspector.value = filteredViolations.value[0].Inspector.surname

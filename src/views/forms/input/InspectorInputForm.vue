@@ -8,9 +8,10 @@ import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import type { Inspector } from '@/types/inspector.ts'
 import { useInspectorStore } from '@/stores/inspector.store.ts'
 import router from '@/router'
+import { useRoute } from 'vue-router'
 
 const { success, err } = useNotification()
-
+const route = useRoute()
 interface Props {
   id?: string // Если id передан, то парсим инспектора, иначе создаем нового
 }
@@ -101,7 +102,8 @@ const deleteInspector = async () => {
   }
 }
 onMounted(async () => {
-  selectedRoute.value = { block: 'forms', id: 2 }
+  if (typeof route.meta.page_id === 'number')
+    selectedRoute.value = { block: "forms", id: route.meta.page_id}
   if (props.id) {
     currentInspector.value = await fetchOne(props.id)
 

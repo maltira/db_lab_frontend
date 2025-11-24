@@ -16,3 +16,19 @@ export interface InspectorCreateRequest {
   phone: string;
   post: string;
 }
+
+export interface ShipCreateRequest {
+  type_id: string;
+  owner_id: string;
+  skipper_id: string;
+  ship_number: string;
+  registration_date: Date;
+  registration_status: 'Активный' | 'Истёкший';
+}
+export interface InspectionCreateRequest {
+  inspector_id: string;
+  ship_id: string;
+  inspection_date: Date;
+  result: 'Годно к эксплутации' | 'Годно с замечаниями' | 'Ограниченно годно' | 'Не годно к эксплутации';
+  next_inspection_date: Date;
+}

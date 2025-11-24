@@ -14,6 +14,9 @@ import InspectorDataForm from '@/views/forms/data/InspectorDataForm.vue'
 import InspectorInputForm from '@/views/forms/input/InspectorInputForm.vue'
 import InspectionDataForm from '@/views/forms/data/InspectionDataForm.vue'
 import ViolationDataForm from '@/views/forms/data/ViolationDataForm.vue'
+import ShipInputForm from '@/views/forms/input/ShipInputForm.vue'
+import ViolationInputForm from '@/views/forms/input/ViolationInputForm.vue'
+import InspectionInputForm from '@/views/forms/input/InspectionInputForm.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -63,53 +66,107 @@ const routes: RouteRecordRaw[] = [
     name: 'OwnerInputForm',
     component: OwnerInputForm,
     props: true,
+    meta: {
+      page_id: 1
+    }
   },
   {
     path: '/form/input/inspector/:id?',
     name: 'InspectorInputForm',
     component: InspectorInputForm,
     props: true,
+    meta: {
+      page_id: 2
+    }
+  },
+  {
+    path: '/form/input/ship/:id?',
+    name: 'ShipInputForm',
+    component: ShipInputForm,
+    props: true,
+    meta: {
+      page_id: 3
+    }
+  },
+  {
+    path: '/form/input/violation/:id?',
+    name: 'ViolationInputForm',
+    component: ViolationInputForm,
+    props: true,
+    meta: {
+      page_id: 4
+    }
+  },
+  {
+    path: '/form/input/inspection/:id?',
+    name: 'InspectionInputForm',
+    component: InspectionInputForm,
+    props: true,
+    meta: {
+      page_id: 5
+    }
   },
   // ФАД
   {
     path: '/',
     name: 'OwnerDataForm',
-    component: OwnerDataForm
+    component: OwnerDataForm,
+    meta: {
+      page_id: 0
+    }
   },
   {
     path: '/form/data/ships/:id?',
     name: 'ShipDataForm',
     component: ShipDataForm,
-    props: true
+    props: true,
+    meta: {
+      page_id: 6
+    }
   },
   {
     path: '/form/data/inspectors',
     name: 'InspectorDataForm',
     component: InspectorDataForm,
+    meta: {
+      page_id: 7
+    }
   },
   {
     path: '/form/data/inspections/inspector/:inspector_id?',
     name: 'InspectionInspectorDataForm',
     component: InspectionDataForm,
-    props: true
+    props: true,
+    meta: {
+      page_id: 8
+    }
   },
   {
     path: '/form/data/inspections/ship/:ship_id?',
     name: 'InspectionShipDataForm',
     component: InspectionDataForm,
-    props: true
+    props: true,
+    meta: {
+      page_id: 8
+    }
   },
   {
     path: '/form/data/violation/inspector/:inspector_id?',
     name: 'ViolationInspectorDataForm',
     component: ViolationDataForm,
-    props: true
+    props: true,
+    meta: {
+      page_id: 9
+    }
   },
   {
     path: '/form/data/violation/ship/:ship_id?',
     name: 'ViolationShipDataForm',
     component: ViolationDataForm,
-    props: true
+    props: true,
+    meta: {
+      page_id: 9
+    }
   },
 ]
 
