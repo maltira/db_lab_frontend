@@ -86,7 +86,7 @@ onMounted(async () => {
         <td>{{ins.Inspector!.surname}}</td>
         <td>{{ins.Ship!.ship_number}}</td>
         <td>{{formatDate(ins.inspection_date)}}</td>
-        <td>{{ins.result}}</td>
+        <td :style="{color: ins.result ? (ins.result === 'Не годно к эксплутации' ? 'red' : (ins.result === 'Годно к эксплутации' ? 'rgb(112, 224, 0)' : '#FFD032')) : ''}">{{ins.result}}</td>
         <td>{{formatDate(ins.next_inspection_date)}}</td>
       </tr>
       </tbody>

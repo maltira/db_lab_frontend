@@ -13,6 +13,7 @@ import { useShipStore } from '@/stores/ship.store.ts'
 import SelectTypeModal from '@/components/ui/modals/SelectTypeModal.vue'
 import SelectOwnerModal from '@/components/ui/modals/SelectOwnerModal.vue'
 import SelectSkipperModal from '@/components/ui/modals/SelectSkipperModal.vue'
+import SelectSStatusModal from '@/components/ui/modals/SelectSStatusModal.vue'
 
 const { success, err } = useNotification()
 
@@ -45,6 +46,7 @@ const skipperSurname = ref('')
 const isTypeModalOpen = ref(false)
 const isOwnerModalOpen = ref(false)
 const isSkipperModalOpen = ref(false)
+const isStatusModalOpen = ref(false)
 const toggleTypeModal = () => {
   isTypeModalOpen.value = !isTypeModalOpen.value
 }
@@ -53,6 +55,9 @@ const toggleOwnerModal = () => {
 }
 const toggleSkipperModal = () => {
   isSkipperModalOpen.value = !isSkipperModalOpen.value
+}
+const toggleStatusModal = () => {
+  isStatusModalOpen.value = !isStatusModalOpen.value
 }
 const handleTypeUpdate = (id: string, name: string) => {
   typeID.value = id
@@ -68,6 +73,10 @@ const handleSkipperUpdate = (id: string, surname: string) => {
   skipperID.value = id
   skipperSurname.value = surname
   isSkipperModalOpen.value = false
+}
+const handleStatusUpdate = (status: 'Активный' | 'Истёкший') => {
+  reg_status.value = status
+  isStatusModalOpen.value = false
 }
 
 const isCalendarOpen = ref(false)
@@ -208,19 +217,19 @@ onUnmounted(() => {
     <div class="container" v-else>
       <div class="item">
         <p>Тип судна:</p>
-        <button @click="toggleTypeModal" ref="containerRef">
+        <button @click="toggleTypeModal">
           {{ typeName ? typeName : "Тип судна" }}
         </button>
       </div>
       <div class="item">
         <p>Владелец:</p>
-        <button @click="toggleOwnerModal" ref="containerRef">
+        <button @click="toggleOwnerModal">
           {{ ownerSurname ? ownerSurname : "Владелец"}}
         </button>
       </div>
       <div class="item">
         <p>Судоводитель:</p>
-        <button @click="toggleSkipperModal" ref="containerRef">
+        <button @click="toggleSkipperModal">
           {{ skipperSurname ? skipperSurname : "Судоводитель"}}
         </button>
       </div>
@@ -249,7 +258,9 @@ onUnmounted(() => {
       </div>
       <div class="item">
         <p>Статус регистрации:</p>
-        <input type="text" v-model="reg_status" placeholder="Статус регистрации" />
+        <button @click="toggleStatusModal" :style="{color: reg_status ? (reg_status === 'Истёкший' ? 'red' : 'rgb(112, 224, 0)') : ''}">
+          {{ reg_status ? reg_status : "Статус регистрации"}}
+        </button>
       </div>
     </div>
     <div class="actions">
@@ -270,6 +281,7 @@ onUnmounted(() => {
   <SelectTypeModal :is-open="isTypeModalOpen" :type-i-d="typeID" @close="isTypeModalOpen = false" @type-updated="handleTypeUpdate"/>
   <SelectOwnerModal :is-open="isOwnerModalOpen" :owner-i-d="ownerID" @close="isOwnerModalOpen = false" @owner-updated="handleOwnerUpdate"/>
   <SelectSkipperModal :is-open="isSkipperModalOpen" :skipper-i-d="skipperID" @close="isSkipperModalOpen = false" @skipper-updated="handleSkipperUpdate"/>
+  <SelectSStatusModal :is-open="isStatusModalOpen" :status="reg_status" @close="isStatusModalOpen = false" @status-updated="handleStatusUpdate"/>
 </template>
 
 <style scoped lang="scss">

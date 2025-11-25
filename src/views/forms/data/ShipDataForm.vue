@@ -80,7 +80,7 @@ onMounted(async () => {
           <td>{{ ship.Skipper!.surname }}</td>
           <td>{{ ship.ship_number }}</td>
           <td>{{ formatDate(ship.registration_date) }}</td>
-          <td>{{ ship.registration_status }}</td>
+          <td :style="{color: ship.registration_status ? (ship.registration_status === 'Истёкший' ? 'red' : 'rgb(112, 224, 0)') : ''}">{{ ship.registration_status }}</td>
         </tr>
       </tbody>
     </table>
