@@ -77,7 +77,6 @@ const isCalendarOpen = ref(false)
 const container1Ref = ref<HTMLElement | null>(null)
 const toggleCalendar = () => {
   isCalendarOpen.value = !isCalendarOpen.value
-  console.log(isCalendarOpen.value)
 }
 const handleDateSelect = (date: Date | null) => {
   if (date) {
@@ -199,7 +198,7 @@ onUnmounted(() => {
         <h1>ГИМС РФ</h1>
         <p>
           Вы находитесь на странице ввода данных осмотра
-          {{ currentInspection ? ' судна с номером«' + currentInspection.Ship!.ship_number + '»' : '' }}
+          {{ currentInspection ? ' судна с номером «' + currentInspection.Ship!.ship_number + '»' : '' }}
         </p>
       </div>
     </div>

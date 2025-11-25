@@ -6,10 +6,10 @@ export interface Violation {
   ship_id: string;
   inspector_id: string;
   violation_date: Date;
-  amount: number;
+  amount: string;
   description: string;
-  status: 'Исполнено' | 'Не исполонено';
+  status: 'Исполнено' | 'Не исполнено';
 
-  Ship: Ship;
-  Inspector: Inspector;
+  Ship?: Ship;
+  Inspector?: Inspector;
 }

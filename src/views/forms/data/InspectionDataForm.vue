@@ -44,11 +44,11 @@ onMounted(async () => {
   if (typeof route.meta.page_id === 'number')
     selectedRoute.value = { block: "forms", id: route.meta.page_id}
   if (props.inspector_id) {
-    filteredInspections.value = inspections.value.filter((ins) => ins.Inspector.id === props.inspector_id)
-    if (filteredInspections.value[0]) currentInspector.value = filteredInspections.value[0].Inspector.surname
+    filteredInspections.value = inspections.value.filter((ins) => ins.Inspector!.id === props.inspector_id)
+    if (filteredInspections.value[0]) currentInspector.value = filteredInspections.value[0].Inspector!.surname
   } else if (props.ship_id) {
-    filteredInspections.value = inspections.value.filter((ship) => ship.Ship.id === props.ship_id)
-    if (filteredInspections.value[0]) currentShip.value = filteredInspections.value[0].Ship.ship_number
+    filteredInspections.value = inspections.value.filter((ship) => ship.Ship!.id === props.ship_id)
+    if (filteredInspections.value[0]) currentShip.value = filteredInspections.value[0].Ship!.ship_number
   }
   else {
     filteredInspections.value = inspections.value
@@ -62,7 +62,7 @@ onMounted(async () => {
       <img src="/img/gims.png" alt="logo">
       <div class="text">
         <h1>ГИМС РФ</h1>
-        <p>Вы находитесь на странице с тех. осмотрами {{currentInspector ? (`инспектора «${currentInspector}»`) : (currentShip ? `судна ${currentShip}»` : "")}}</p>
+        <p>Вы находитесь на странице с тех. осмотрами{{currentInspector ? (`, проведенными инспектором «${currentInspector}»`) : (currentShip ? ` судна ${currentShip}»` : "")}}</p>
       </div>
     </div>
     <Skeleton height="300px" v-if="isLoading && !error"/>
@@ -83,8 +83,8 @@ onMounted(async () => {
         :key="i"
         @click="goToInspection(ins.id)"
       >
-        <td>{{ins.Inspector.surname}}</td>
-        <td>{{ins.Ship.ship_number}}</td>
+        <td>{{ins.Inspector!.surname}}</td>
+        <td>{{ins.Ship!.ship_number}}</td>
         <td>{{formatDate(ins.inspection_date)}}</td>
         <td>{{ins.result}}</td>
         <td>{{formatDate(ins.next_inspection_date)}}</td>
@@ -93,7 +93,7 @@ onMounted(async () => {
     </table>
     <p v-else>Не найдено проведенных осмотров</p>
     <div class="actions">
-      <button @click="">
+      <button @click="router.push('/form/input/inspection')">
         <img src="/icons/add.svg" alt="add">
         Новая запись
       </button>

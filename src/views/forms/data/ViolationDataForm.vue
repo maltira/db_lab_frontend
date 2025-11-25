@@ -41,11 +41,11 @@ onMounted(async () => {
   if (typeof route.meta.page_id === 'number')
     selectedRoute.value = { block: "forms", id: route.meta.page_id}
   if (props.inspector_id) {
-    filteredViolations.value = violations.value.filter((v) => v.Inspector.id === props.inspector_id)
-    if (filteredViolations.value[0]) currentInspector.value = filteredViolations.value[0].Inspector.surname
+    filteredViolations.value = violations.value.filter((v) => v.Inspector!.id === props.inspector_id)
+    if (filteredViolations.value[0]) currentInspector.value = filteredViolations.value[0].Inspector!.surname
   } else if (props.ship_id) {
-    filteredViolations.value = violations.value.filter((v) => v.Ship.id === props.ship_id)
-    if (filteredViolations.value[0]) currentShip.value = filteredViolations.value[0].Ship.ship_number
+    filteredViolations.value = violations.value.filter((v) => v.Ship!.id === props.ship_id)
+    if (filteredViolations.value[0]) currentShip.value = filteredViolations.value[0].Ship!.ship_number
   }
   else {
     filteredViolations.value = violations.value
@@ -81,8 +81,8 @@ onMounted(async () => {
         :key="i"
         @click="goToViolation(v.id)"
       >
-        <td>{{v.Ship.ship_number}}</td>
-        <td>{{v.Inspector.surname}}</td>
+        <td>{{v.Ship!.ship_number}}</td>
+        <td>{{v.Inspector!.surname}}</td>
         <td>{{formatDate(v.violation_date)}}</td>
         <td>{{v.amount}}</td>
         <td>{{v.description}}</td>
@@ -92,7 +92,7 @@ onMounted(async () => {
     </table>
     <p v-else>Выявленные нарушения не найдены</p>
     <div class="actions">
-      <button @click="">
+      <button @click="router.push('/form/input/violation')">
         <img src="/icons/add.svg" alt="add">
         Новая запись
       </button>

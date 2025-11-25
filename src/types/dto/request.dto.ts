@@ -32,3 +32,11 @@ export interface InspectionCreateRequest {
   result: 'Годно к эксплутации' | 'Годно с замечаниями' | 'Ограниченно годно' | 'Не годно к эксплутации';
   next_inspection_date: Date;
 }
+export interface ViolationCreateRequest {
+  inspector_id: string;
+  ship_id: string;
+  amount: string;
+  violation_date: Date;
+  status: 'Исполнено' | 'Не исполнено';
+  description: string;
+}
