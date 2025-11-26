@@ -80,7 +80,7 @@ const handleStatusUpdate = (status: 'Активный' | 'Истёкший') => 
 }
 
 const isCalendarOpen = ref(false)
-const containerRef = ref<HTMLElement | null>(null)
+const container2Ref = ref<HTMLElement | null>(null)
 const toggleCalendar = () => {
   isCalendarOpen.value = !isCalendarOpen.value
 }
@@ -90,7 +90,7 @@ const handleDateSelect = (date: Date | null) => {
   }
 }
 const handleClickOutside = (event: MouseEvent) => {
-  if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
+  if (container2Ref.value && !container2Ref.value.contains(event.target as Node)) {
     isCalendarOpen.value = false
   }
 }
@@ -239,7 +239,7 @@ onUnmounted(() => {
       </div>
       <div class="item" :style="{ position: 'relative' }">
         <p>Дата регистрации:</p>
-        <button @click="toggleCalendar" ref="containerRef">
+        <button @click="toggleCalendar" ref="container2Ref">
           {{ reg_date ? formatDate(reg_date) : 'Дата регистрации' }}
           <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>

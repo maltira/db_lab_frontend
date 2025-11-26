@@ -40,3 +40,17 @@ export interface ViolationCreateRequest {
   status: 'Исполнено' | 'Не исполнено';
   description: string;
 }
+
+export interface OwnershipCreateRequest {
+  old_owner: string;
+  new_owner: string;
+  transfer_date: Date;
+  ship_id: string;
+}
+
+export interface SkipperCreateRequest {
+  name: string;
+  surname: string;
+  patronymic: string;
+  id_number: string;
+}

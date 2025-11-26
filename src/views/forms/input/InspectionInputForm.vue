@@ -173,7 +173,6 @@ onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   if (props.id) {
     currentInspection.value = await fetchOne(props.id)
-
     if (currentInspection.value) {
       inspectorID.value = currentInspection.value.Inspector!.id
       inspectorSurname.value = currentInspection.value.Inspector!.surname
@@ -207,19 +206,19 @@ onUnmounted(() => {
     <div class="container" v-else>
       <div class="item">
         <p>Инспектор:</p>
-        <button @click="toggleInspectorModal" ref="containerRef">
+        <button @click="toggleInspectorModal">
           {{ inspectorSurname ? inspectorSurname : 'Инспектор' }}
         </button>
       </div>
       <div class="item">
         <p>Судно:</p>
-        <button @click="toggleShipModal" ref="containerRef">
+        <button @click="toggleShipModal">
           {{ shipNumber ? shipNumber : 'Судно' }}
         </button>
       </div>
       <div class="item" :style="{ position: 'relative' }">
         <p>Дата проведения:</p>
-        <button @click="toggleCalendar" ref="containerRef">
+        <button @click="toggleCalendar" ref="container1Ref">
           {{ ins_date ? formatDate(ins_date) : 'Дата проведения' }}
           <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>
@@ -238,7 +237,7 @@ onUnmounted(() => {
       </div>
       <div class="item">
         <p>Результат:</p>
-        <button @click="toggleResultModal" ref="containerRef">
+        <button @click="toggleResultModal">
           {{ result ? result : 'Результат' }}
         </button>
       </div>

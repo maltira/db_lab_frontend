@@ -17,6 +17,10 @@ import ViolationDataForm from '@/views/forms/data/ViolationDataForm.vue'
 import ShipInputForm from '@/views/forms/input/ShipInputForm.vue'
 import ViolationInputForm from '@/views/forms/input/ViolationInputForm.vue'
 import InspectionInputForm from '@/views/forms/input/InspectionInputForm.vue'
+import OwnershipDataForm from '@/views/forms/data/OwnershipDataForm.vue'
+import SkipperDataForm from '@/views/forms/data/SkipperDataForm.vue'
+import SkipperInputForm from '@/views/forms/input/SkipperInputForm.vue'
+import OwnershipInputForm from '@/views/forms/input/OwnershipInputForm.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -106,6 +110,24 @@ const routes: RouteRecordRaw[] = [
       page_id: 5
     }
   },
+  {
+    path: '/form/input/ownership/:id?',
+    name: 'OwnershipInputForm',
+    component: OwnershipInputForm,
+    props: true,
+    meta: {
+      page_id: 6
+    }
+  },
+  {
+    path: '/form/input/skipper/:id?',
+    name: 'SkipperInputForm',
+    component: SkipperInputForm,
+    props: true,
+    meta: {
+      page_id: 7
+    }
+  },
   // ФАД
   {
     path: '/',
@@ -121,7 +143,7 @@ const routes: RouteRecordRaw[] = [
     component: ShipDataForm,
     props: true,
     meta: {
-      page_id: 6
+      page_id: 8
     }
   },
   {
@@ -129,7 +151,7 @@ const routes: RouteRecordRaw[] = [
     name: 'InspectorDataForm',
     component: InspectorDataForm,
     meta: {
-      page_id: 7
+      page_id: 9
     }
   },
   {
@@ -138,7 +160,7 @@ const routes: RouteRecordRaw[] = [
     component: InspectionDataForm,
     props: true,
     meta: {
-      page_id: 8
+      page_id: 10
     }
   },
   {
@@ -147,7 +169,7 @@ const routes: RouteRecordRaw[] = [
     component: InspectionDataForm,
     props: true,
     meta: {
-      page_id: 8
+      page_id: 10
     }
   },
   {
@@ -156,7 +178,7 @@ const routes: RouteRecordRaw[] = [
     component: ViolationDataForm,
     props: true,
     meta: {
-      page_id: 9
+      page_id: 11
     }
   },
   {
@@ -165,7 +187,25 @@ const routes: RouteRecordRaw[] = [
     component: ViolationDataForm,
     props: true,
     meta: {
-      page_id: 9
+      page_id: 11
+    }
+  },
+  {
+    path: '/form/data/ownership',
+    name: 'OwnershipDataForm',
+    component: OwnershipDataForm,
+    props: true,
+    meta: {
+      page_id: 12
+    }
+  },
+  {
+    path: '/form/data/skipper',
+    name: 'SkipperDataForm',
+    component: SkipperDataForm,
+    props: true,
+    meta: {
+      page_id: 13
     }
   },
 ]

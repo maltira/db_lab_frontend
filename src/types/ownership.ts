@@ -8,7 +8,7 @@ export interface Ownership {
   transfer_date: Date;
   ship_id: string;
 
-  ShipOldOwner: Owner;
-  ShipNewOwner: Owner;
-  Ship: Ship;
+  ShipOldOwner?: Owner;
+  ShipNewOwner?: Owner;
+  Ship?: Ship;
 }

@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useNotification } from '@/composables/useNotification.ts'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted } from 'vue'
 import { useShipStore } from '@/stores/ship.store.ts'
-
-const { err } = useNotification()
 
 const shipStore = useShipStore()
 const { fetchShips } = shipStore
@@ -12,36 +9,21 @@ const { ships } = storeToRefs(shipStore)
 
 interface Props {
   isOpen: boolean
-  shipID: string // текущий тип
-  ownerIDFilter?: string
+  skipperID: string
 }
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
   close: []
-  shipUpdated: [id: string, number: string]
 }>()
 
 const handleClose = () => {
   emit('close')
 }
 
-const handleType = (id: string, number: string) => {
-  if (id != props.shipID) {
-    emit('shipUpdated', id, number)
-  } else {
-    err('Ошибка выбора судна', 'Это судно уже выбрано')
-  }
-}
-
-const allShips = computed(() => {
-  if (props.ownerIDFilter) {
-    return ships.value.filter(ship => ship.owner_id === props.ownerIDFilter)
-  } else {
-    return ships.value
-  }
+const skipperShips = computed(() => {
+  return ships.value.filter(ship => ship.skipper_id === props.skipperID)
 })
-
 onMounted(async () => {
   await fetchShips()
 })
@@ -53,18 +35,10 @@ onMounted(async () => {
       <div class="modal-close-button" @click="handleClose">
         <img src="/icons/close.svg" alt="close" width="28px" />
       </div>
-      <h1>Выберите судно</h1>
       <div class="modal-body">
-        <button
-          v-for="(s, i) in allShips"
-          :key="i"
-          class="role-item"
-          :class="{ disabled: s.id === props.shipID }"
-          @click="handleType(s.id, s.ship_number)"
-          v-if="allShips.length > 0"
+        <span v-if="skipperShips.length > 0" v-for="(s, i) in skipperShips" :key="i"
+          >{{ s.Type!.name }} - {{ s.ship_number }}</span
         >
-          <span>{{ s.Type!.name }} - {{ s.ship_number }} - {{ s.Owner!.surname }}</span>
-        </button>
         <p v-else style="text-align: center">Ничего не найдено</p>
       </div>
     </div>
@@ -95,10 +69,6 @@ onMounted(async () => {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
-
-    &.dark-theme {
-      background: rgba(white, 0.1);
-    }
   }
 }
 .modal-content {
@@ -110,38 +80,21 @@ onMounted(async () => {
   position: relative;
   padding: 40px;
   border-radius: 16px;
-
-  & > h1 {
-    font-size: 24px;
-    text-align: center;
-  }
 }
 .modal-body {
   display: flex;
   flex-direction: column;
   gap: 10px;
 
-  & > .role-item {
+  & > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 48px;
     padding: 0 15px;
     border-radius: 12px;
     background: rgba(gray, 0.1);
-    & > span {
-      font-weight: 400;
-      opacity: 0.7;
-    }
-    &.disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    &:hover {
-      background: rgba(gray, 0.15);
-
-      & > span {
-        opacity: 0.8;
-      }
-    }
   }
 }
 .modal-close-button {
