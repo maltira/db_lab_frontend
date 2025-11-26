@@ -3,16 +3,17 @@ import Skeleton from '@/components/ui/Skeleton.vue'
 import { storeToRefs } from 'pinia'
 import { useShipStore } from '@/stores/ship.store.ts'
 import router from '@/router'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { formatDate } from '@/utils/date_format.ts'
 import type { Ship } from '@/types/ship.ts'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useRoute } from 'vue-router'
+import SearchFilterModal from '@/components/ui/modals/SearchFilterModal.vue'
 const route = useRoute()
 const sidebarStore = useSidebarStore()
 const { selectedRoute } = storeToRefs(sidebarStore)
 
-const currentOwner = ref<string>("")
+const currentOwner = ref<string>('')
 
 interface Props {
   id?: string // Если id передан, то парсим судна владельца, иначе все
@@ -23,6 +24,30 @@ const shipStore = useShipStore()
 const { fetchShips } = shipStore
 const { ships, isLoading, error } = storeToRefs(shipStore)
 const filteredShips = ref<Ship[]>([])
+
+const filter = ref('')
+const isSearchModalOpen = ref(false)
+const toggleSearchModal = () => {
+  isSearchModalOpen.value = !isSearchModalOpen.value
+}
+const handleFilter = (res: string) => {
+  filter.value = res
+  isSearchModalOpen.value = false
+}
+
+const allShips = computed(() => {
+  if (filter.value) {
+    return filteredShips.value.filter(
+      (item) =>
+        item.ship_number.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.Owner?.surname.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.Type?.name.toLowerCase().includes(filter.value.toLowerCase()) ||
+        formatDate(item.registration_date).includes(filter.value) ||
+        item.registration_status.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.Skipper?.surname.toLowerCase().includes(filter.value.toLowerCase()),
+    )
+  } else return filteredShips.value
+})
 
 const reloadShips = async () => {
   await fetchShips()
@@ -40,7 +65,7 @@ const goToShip = async (id: string) => {
 onMounted(async () => {
   await fetchShips()
   if (typeof route.meta.page_id === 'number')
-    selectedRoute.value = { block: "forms", id: route.meta.page_id}
+    selectedRoute.value = { block: 'forms', id: route.meta.page_id }
 
   if (props.id) {
     filteredShips.value = ships.value.filter((ship) => ship.Owner!.id === props.id)
@@ -57,12 +82,19 @@ onMounted(async () => {
       <img src="/img/gims.png" alt="logo" />
       <div class="text">
         <h1>ГИМС РФ</h1>
-        <p>Вы находитесь на странице суден {{currentOwner ? "владельца «" + currentOwner + "»" : ""}}</p>
+        <p>
+          Вы находитесь на странице суден
+          {{ currentOwner ? 'владельца «' + currentOwner + '»' : '' }}
+        </p>
       </div>
     </div>
+    <div class="filter-block" v-if="filter">
+      <button @click="filter = ''">← Вернуться</button>
+      <p class="mes-p">Результаты по запросу «{{filter}}»:</p>
+    </div>
     <Skeleton v-if="isLoading && !error" height="300px" />
-    <p v-else-if="error">Произошла ошибка: {{ error }}</p>
-    <table v-else-if="filteredShips.length > 0">
+    <p v-else-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+    <table v-else-if="allShips.length > 0">
       <thead>
         <tr>
           <td>Тип</td>
@@ -74,23 +106,33 @@ onMounted(async () => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(ship, i) in filteredShips" :key="i" @click="goToShip(ship.id)">
+        <tr v-for="(ship, i) in allShips" :key="i" @click="goToShip(ship.id)">
           <td>{{ ship.Type!.name }}</td>
           <td>{{ ship.Owner!.surname }}</td>
           <td>{{ ship.Skipper!.surname }}</td>
           <td>{{ ship.ship_number }}</td>
           <td>{{ formatDate(ship.registration_date) }}</td>
-          <td :style="{color: ship.registration_status ? (ship.registration_status === 'Истёкший' ? 'red' : 'rgb(112, 224, 0)') : ''}">{{ ship.registration_status }}</td>
+          <td
+            :style="{
+              color: ship.registration_status
+                ? ship.registration_status === 'Истёкший'
+                  ? 'red'
+                  : 'rgb(112, 224, 0)'
+                : '',
+            }"
+          >
+            {{ ship.registration_status }}
+          </td>
         </tr>
       </tbody>
     </table>
-    <p v-else>У владельца нет суден</p>
+    <p v-else class="mes-p">Ничего не найдено</p>
     <div class="actions">
       <button @click="router.push('/form/input/ship')">
         <img src="/icons/add.svg" alt="add" />
         Новая запись
       </button>
-      <button v-if="filteredShips.length > 0">
+      <button v-if="filteredShips.length > 0" @click="toggleSearchModal">
         <img src="/icons/search.svg" alt="search" />
         Найти запись
       </button>
@@ -100,6 +142,7 @@ onMounted(async () => {
       </button>
     </div>
   </div>
+  <SearchFilterModal :is-open="isSearchModalOpen" @close="isSearchModalOpen = false" @filter-updated="handleFilter"/>
 </template>
 
 <style scoped lang="scss">
@@ -200,5 +243,24 @@ table {
       background-color: rgba(#6378ff, 0.05);
     }
   }
+}
+.filter-block{
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+  gap: 10px;
+
+  & > button {
+    font-size: 16px;
+    opacity: 0.7;
+
+    &:hover{
+      opacity: 9;
+    }
+  }
+}
+.mes-p{
+  font-size: 16px;
+  opacity: 0.9;
 }
 </style>

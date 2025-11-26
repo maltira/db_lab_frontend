@@ -1,7 +1,6 @@
 <script setup lang="ts">
-
 import { storeToRefs } from 'pinia'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Skeleton from '@/components/ui/Skeleton.vue'
 import { formatDate } from '@/utils/date_format.ts'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
@@ -9,6 +8,7 @@ import { useViolationStore } from '@/stores/violation.store.ts'
 import type { Violation } from '@/types/violation.ts'
 import { useRoute } from 'vue-router'
 import router from '@/router'
+import SearchFilterModal from '@/components/ui/modals/SearchFilterModal.vue'
 const route = useRoute()
 // Может прийти ID инспектора, либо ID судна, либо ничего
 interface Props {
@@ -25,8 +25,32 @@ const { fetchViolations } = violationStore
 const { violations, isLoading, error } = storeToRefs(violationStore)
 const filteredViolations = ref<Violation[]>([])
 
-const currentInspector = ref<string>("")
-const currentShip = ref<string>("")
+const currentInspector = ref<string>('')
+const currentShip = ref<string>('')
+
+const filter = ref('')
+const isSearchModalOpen = ref(false)
+const toggleSearchModal = () => {
+  isSearchModalOpen.value = !isSearchModalOpen.value
+}
+const handleFilter = (res: string) => {
+  filter.value = res
+  isSearchModalOpen.value = false
+}
+
+const allViolations = computed(() => {
+  if (filter.value) {
+    return filteredViolations.value.filter(
+      (item) =>
+        item.status.toLowerCase().includes(filter.value.toLowerCase()) ||
+        formatDate(item.violation_date).includes(filter.value) ||
+        item.amount.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.description.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.Inspector?.surname.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.Ship?.ship_number.toLowerCase().includes(filter.value.toLowerCase()),
+    )
+  } else return filteredViolations.value
+})
 
 const reloadViolations = async () => {
   await fetchViolations()
@@ -39,15 +63,18 @@ const goToViolation = async (id: string) => {
 onMounted(async () => {
   await fetchViolations()
   if (typeof route.meta.page_id === 'number')
-    selectedRoute.value = { block: "forms", id: route.meta.page_id}
+    selectedRoute.value = { block: 'forms', id: route.meta.page_id }
   if (props.inspector_id) {
-    filteredViolations.value = violations.value.filter((v) => v.Inspector!.id === props.inspector_id)
-    if (filteredViolations.value[0]) currentInspector.value = filteredViolations.value[0].Inspector!.surname
+    filteredViolations.value = violations.value.filter(
+      (v) => v.Inspector!.id === props.inspector_id,
+    )
+    if (filteredViolations.value[0])
+      currentInspector.value = filteredViolations.value[0].Inspector!.surname
   } else if (props.ship_id) {
     filteredViolations.value = violations.value.filter((v) => v.Ship!.id === props.ship_id)
-    if (filteredViolations.value[0]) currentShip.value = filteredViolations.value[0].Ship!.ship_number
-  }
-  else {
+    if (filteredViolations.value[0])
+      currentShip.value = filteredViolations.value[0].Ship!.ship_number
+  } else {
     filteredViolations.value = violations.value
   }
 })
@@ -56,56 +83,69 @@ onMounted(async () => {
 <template>
   <div class="data-view">
     <div class="title">
-      <img src="/img/gims.png" alt="logo">
+      <img src="/img/gims.png" alt="logo" />
       <div class="text">
         <h1>ГИМС РФ</h1>
-        <p>Вы находитесь на странице с нарушениями{{currentInspector ? (`, выявленными инспектором «${currentInspector}»`) : (currentShip ? ` судна ${currentShip}»` : "")}}</p>
+        <p>
+          Вы находитесь на странице с нарушениями{{
+            currentInspector
+              ? `, выявленными инспектором «${currentInspector}»`
+              : currentShip
+                ? ` судна ${currentShip}»`
+                : ''
+          }}
+        </p>
       </div>
     </div>
-    <Skeleton height="300px" v-if="isLoading && !error"/>
-    <p v-else-if="error">Произошла ошибка: {{error}}</p>
-    <table v-else-if="filteredViolations.length > 0">
+    <div class="filter-block" v-if="filter">
+      <button @click="filter = ''">← Вернуться</button>
+      <p class="mes-p">Результаты по запросу «{{filter}}»:</p>
+    </div>
+    <Skeleton height="300px" v-if="isLoading && !error" />
+    <p v-else-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+    <table v-else-if="allViolations.length > 0">
       <thead>
-      <tr>
-        <td>Номер судна</td>
-        <td>Инспектор</td>
-        <td>Дата нарушения</td>
-        <td>Сумма штрафа</td>
-        <td>Описание</td>
-        <td>Статус</td>
-      </tr>
+        <tr>
+          <td>Номер судна</td>
+          <td>Инспектор</td>
+          <td>Дата нарушения</td>
+          <td>Сумма штрафа</td>
+          <td>Описание</td>
+          <td>Статус</td>
+        </tr>
       </thead>
       <tbody>
-      <tr
-        v-for="(v, i) in filteredViolations"
-        :key="i"
-        @click="goToViolation(v.id)"
-      >
-        <td>{{v.Ship!.ship_number}}</td>
-        <td>{{v.Inspector!.surname}}</td>
-        <td>{{formatDate(v.violation_date)}}</td>
-        <td>{{v.amount}}</td>
-        <td>{{v.description}}</td>
-        <td :style="{color: v.status === 'Исполнено' ? '#70e000' : 'red'}">{{v.status}}</td>
-      </tr>
+        <tr v-for="(v, i) in allViolations" :key="i" @click="goToViolation(v.id)">
+          <td>{{ v.Ship!.ship_number }}</td>
+          <td>{{ v.Inspector!.surname }}</td>
+          <td>{{ formatDate(v.violation_date) }}</td>
+          <td>{{ v.amount }}</td>
+          <td>{{ v.description }}</td>
+          <td :style="{ color: v.status === 'Исполнено' ? '#70e000' : 'red' }">{{ v.status }}</td>
+        </tr>
       </tbody>
     </table>
-    <p v-else>Выявленные нарушения не найдены</p>
+    <p v-else class="mes-p">Ничего не найдено</p>
     <div class="actions">
       <button @click="router.push('/form/input/violation')">
-        <img src="/icons/add.svg" alt="add">
+        <img src="/icons/add.svg" alt="add" />
         Новая запись
       </button>
-      <button v-if="filteredViolations.length > 0">
-        <img src="/icons/search.svg" alt="search">
+      <button v-if="filteredViolations.length > 0" @click="toggleSearchModal">
+        <img src="/icons/search.svg" alt="search" />
         Найти запись
       </button>
-      <button @click="reloadViolations" >
-        <img src="/icons/reload.svg" alt="reload">
+      <button @click="reloadViolations">
+        <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
       </button>
     </div>
   </div>
+  <SearchFilterModal
+    :is-open="isSearchModalOpen"
+    @close="isSearchModalOpen = false"
+    @filter-updated="handleFilter"
+  />
 </template>
 
 <style scoped lang="scss">
@@ -128,7 +168,8 @@ onMounted(async () => {
       width: 100px;
     }
     & > .text {
-      & > h1, & > p {
+      & > h1,
+      & > p {
         text-align: center;
       }
       & > p {
@@ -158,24 +199,22 @@ table {
   }
   & > tbody {
     & > tr {
-
       & > td {
         padding: 5px 0;
       }
       &:last-child {
-
         & > td {
           border-bottom: none;
         }
       }
-      &:hover{
+      &:hover {
         cursor: pointer;
         background-color: rgba(gray, 0.08);
       }
     }
   }
 }
-.actions{
+.actions {
   display: flex;
   gap: 10px;
 
@@ -198,10 +237,29 @@ table {
       width: 20px;
       height: 20px;
     }
-    &:hover{
+    &:hover {
       border-color: rgba(#6378ff, 1);
       background-color: rgba(#6378ff, 0.05);
     }
   }
+}
+.filter-block {
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+  gap: 10px;
+
+  & > button {
+    font-size: 16px;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 9;
+    }
+  }
+}
+.mes-p {
+  font-size: 16px;
+  opacity: 0.9;
 }
 </style>

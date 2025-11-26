@@ -1,12 +1,12 @@
 <script setup lang="ts">
-
 import { storeToRefs } from 'pinia'
-import { onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Skeleton from '@/components/ui/Skeleton.vue'
 import router from '@/router'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useInspectorStore } from '@/stores/inspector.store.ts'
 import { useRoute } from 'vue-router'
+import SearchFilterModal from '@/components/ui/modals/SearchFilterModal.vue'
 
 const route = useRoute()
 
@@ -16,6 +16,29 @@ const { selectedRoute } = storeToRefs(sidebarStore)
 const insStore = useInspectorStore()
 const { fetchInspectors } = insStore
 const { inspectors, isLoading, error } = storeToRefs(insStore)
+
+const filter = ref('')
+const isSearchModalOpen = ref(false)
+const toggleSearchModal = () => {
+  isSearchModalOpen.value = !isSearchModalOpen.value
+}
+const handleFilter = (res: string) => {
+  filter.value = res
+  isSearchModalOpen.value = false
+}
+
+const allInspectors = computed(() => {
+  if (filter.value) {
+    return inspectors.value.filter(
+      (item) =>
+        item.name.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.surname.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.post.toLowerCase().includes(filter.value.toLowerCase()) ||
+        item.phone.includes(filter.value) ||
+        item.patronymic?.toLowerCase().includes(filter.value.toLowerCase()),
+    )
+  } else return inspectors.value
+})
 
 const reloadInspectors = async () => {
   await fetchInspectors()
@@ -28,61 +51,63 @@ const goToInspector = async (id: string) => {
 onMounted(async () => {
   await fetchInspectors()
   if (typeof route.meta.page_id === 'number')
-    selectedRoute.value = { block: "forms", id: route.meta.page_id}
+    selectedRoute.value = { block: 'forms', id: route.meta.page_id }
 })
 </script>
 
 <template>
   <div class="data-view">
     <div class="title">
-      <img src="/img/gims.png" alt="logo">
+      <img src="/img/gims.png" alt="logo" />
       <div class="text">
         <h1>ГИМС РФ</h1>
         <p>Вы находитесь на странице с инспекторами</p>
       </div>
     </div>
-    <Skeleton height="300px" v-if="isLoading && !error"/>
-    <p v-else-if="error">Произошла ошибка: {{error}}</p>
-    <table v-else-if="inspectors.length > 0">
+    <div class="filter-block" v-if="filter">
+      <button @click="filter = ''">← Вернуться</button>
+      <p class="mes-p">Результаты по запросу «{{filter}}»:</p>
+    </div>
+    <Skeleton height="300px" v-if="isLoading && !error" />
+    <p v-else-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+    <table v-else-if="allInspectors.length > 0">
       <thead>
-      <tr>
-        <td>Имя</td>
-        <td>Фамилия</td>
-        <td>Отчество</td>
-        <td>Должность</td>
-        <td>Номер телефона</td>
-      </tr>
+        <tr>
+          <td>Имя</td>
+          <td>Фамилия</td>
+          <td>Отчество</td>
+          <td>Должность</td>
+          <td>Номер телефона</td>
+        </tr>
       </thead>
       <tbody>
-      <tr
-        v-for="(ins, i) in inspectors"
-        :key="i"
-        @click="goToInspector(ins.id)"
-      >
-        <td>{{ins.name}}</td>
-        <td>{{ins.surname}}</td>
-        <td>{{ins.patronymic || ""}}</td>
-        <td>{{ins.post}}</td>
-        <td>{{ins.phone}}</td>
-      </tr>
+        <tr v-for="(ins, i) in allInspectors" :key="i" @click="goToInspector(ins.id)">
+          <td>{{ ins.name }}</td>
+          <td>{{ ins.surname }}</td>
+          <td>{{ ins.patronymic || '' }}</td>
+          <td>{{ ins.post }}</td>
+          <td>{{ ins.phone }}</td>
+        </tr>
       </tbody>
     </table>
-    <p v-else>Инспекторы не найдены</p>
+    <p v-else class="mes-p">Ничего не найдено</p>
     <div class="actions">
       <button @click="router.push('/form/input/inspector')">
-        <img src="/icons/add.svg" alt="add">
+        <img src="/icons/add.svg" alt="add" />
         Новая запись
       </button>
-      <button v-if="inspectors.length > 0">
-        <img src="/icons/search.svg" alt="search">
+      <button v-if="inspectors.length > 0" @click="toggleSearchModal">
+        <img src="/icons/search.svg" alt="search" />
         Найти запись
       </button>
-      <button @click="reloadInspectors" >
-        <img src="/icons/reload.svg" alt="reload">
+      <button @click="reloadInspectors">
+        <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
       </button>
     </div>
   </div>
+
+  <SearchFilterModal :is-open="isSearchModalOpen" @close="isSearchModalOpen = false" @filter-updated="handleFilter"/>
 </template>
 
 <style scoped lang="scss">
@@ -105,7 +130,8 @@ onMounted(async () => {
       width: 100px;
     }
     & > .text {
-      & > h1, & > p {
+      & > h1,
+      & > p {
         text-align: center;
       }
       & > p {
@@ -135,7 +161,6 @@ table {
   }
   & > tbody {
     & > tr {
-
       & > td {
         padding: 5px 0;
 
@@ -144,19 +169,18 @@ table {
         }
       }
       &:last-child {
-
         & > td {
           border-bottom: none;
         }
       }
-      &:hover{
+      &:hover {
         cursor: pointer;
         background-color: rgba(gray, 0.08);
       }
     }
   }
 }
-.actions{
+.actions {
   display: flex;
   gap: 10px;
 
@@ -179,10 +203,29 @@ table {
       width: 20px;
       height: 20px;
     }
-    &:hover{
+    &:hover {
       border-color: rgba(#6378ff, 1);
       background-color: rgba(#6378ff, 0.05);
     }
   }
+}
+.filter-block{
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+  gap: 10px;
+
+  & > button {
+    font-size: 16px;
+    opacity: 0.7;
+
+    &:hover{
+      opacity: 9;
+    }
+  }
+}
+.mes-p{
+  font-size: 16px;
+  opacity: 0.9;
 }
 </style>
