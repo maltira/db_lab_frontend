@@ -1,12 +1,10 @@
 <script setup lang="ts">
-
 import { useNotification } from '@/composables/useNotification.ts'
+import { onMounted, onUnmounted } from 'vue'
 
 const { err } = useNotification()
 
-const results: ('Исполнено' | 'Не исполнено')[] = [
-  'Исполнено', 'Не исполнено'
-]
+const results: ('Исполнено' | 'Не исполнено')[] = ['Исполнено', 'Не исполнено']
 
 interface Props {
   isOpen: boolean
@@ -15,7 +13,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  close: [],
+  close: []
   statusUpdated: [res: 'Исполнено' | 'Не исполнено']
 }>()
 
@@ -27,9 +25,20 @@ const handleResult = (res: 'Исполнено' | 'Не исполнено') => 
   if (res != props.status) {
     emit('statusUpdated', res)
   } else {
-    err("Ошибка выбора статуса", "Этот статус уже выбран")
+    err('Ошибка выбора статуса', 'Этот статус уже выбран')
   }
 }
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.isOpen) {
+    handleClose()
+  }
+}
+onMounted(() => {
+  document.addEventListener('keydown', handleEscape)
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
+})
 </script>
 
 <template>
@@ -44,10 +53,10 @@ const handleResult = (res: 'Исполнено' | 'Не исполнено') => 
           v-for="(s, i) in results"
           :key="i"
           class="role-item"
-          :class="{disabled: s === props.status}"
+          :class="{ disabled: s === props.status }"
           @click="handleResult(s)"
         >
-          <span>{{s}}</span>
+          <span>{{ s }}</span>
         </button>
       </div>
     </div>
@@ -73,15 +82,10 @@ const handleResult = (res: 'Исполнено' | 'Не исполнено') => 
   justify-content: center;
 
   &.active {
-    background-color: rgba(black, 0.1);
-    backdrop-filter: blur(4px);
+    background-color: rgba(black, 0.2);
     visibility: visible;
     pointer-events: auto;
     opacity: 1;
-
-    &.dark-theme {
-      background: rgba(white, 0.1);
-    }
   }
 }
 .modal-content {
@@ -92,7 +96,7 @@ const handleResult = (res: 'Исполнено' | 'Не исполнено') => 
   width: 500px;
   position: relative;
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 8px;
 
   & > h1 {
     font-size: 24px;
@@ -114,11 +118,11 @@ const handleResult = (res: 'Исполнено' | 'Не исполнено') => 
       font-weight: 400;
       opacity: 0.7;
     }
-    &.disabled{
+    &.disabled {
       opacity: 0.5;
       pointer-events: none;
     }
-    &:hover{
+    &:hover {
       background: rgba(gray, 0.15);
 
       & > span {
@@ -130,15 +134,15 @@ const handleResult = (res: 'Исполнено' | 'Не исполнено') => 
 .modal-close-button {
   cursor: pointer;
   padding: 4px;
-  border-radius: 32px;
+  border-radius: 8px;
   background: $white;
   position: absolute;
   top: 0;
   right: calc(-36px - 12px);
 
-  opacity: 0.6;
+  opacity: 0.8;
   &:hover {
-    opacity: 0.8;
+    opacity: 0.9;
   }
   & > img {
     width: 28px;

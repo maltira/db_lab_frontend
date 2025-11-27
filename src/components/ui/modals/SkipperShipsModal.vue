@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useShipStore } from '@/stores/ship.store.ts'
 
 const shipStore = useShipStore()
@@ -22,10 +22,20 @@ const handleClose = () => {
 }
 
 const skipperShips = computed(() => {
-  return ships.value.filter(ship => ship.skipper_id === props.skipperID)
+  return ships.value.filter((ship) => ship.skipper_id === props.skipperID)
 })
+
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.isOpen) {
+    handleClose()
+  }
+}
 onMounted(async () => {
+  document.addEventListener('keydown', handleEscape)
   await fetchShips()
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
 })
 </script>
 
@@ -64,8 +74,7 @@ onMounted(async () => {
   justify-content: center;
 
   &.active {
-    background-color: rgba(black, 0.1);
-    backdrop-filter: blur(4px);
+    background-color: rgba(black, 0.2);
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
@@ -79,7 +88,7 @@ onMounted(async () => {
   width: 800px;
   position: relative;
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 8px;
 }
 .modal-body {
   display: flex;
@@ -100,15 +109,15 @@ onMounted(async () => {
 .modal-close-button {
   cursor: pointer;
   padding: 4px;
-  border-radius: 32px;
+  border-radius: 8px;
   background: $white;
   position: absolute;
   top: 0;
   right: calc(-36px - 12px);
 
-  opacity: 0.6;
+  opacity: 0.8;
   &:hover {
-    opacity: 0.8;
+    opacity: 0.9;
   }
   & > img {
     width: 28px;

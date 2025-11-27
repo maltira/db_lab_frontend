@@ -1,8 +1,7 @@
 <script setup lang="ts">
-
 import { useNotification } from '@/composables/useNotification.ts'
 import { storeToRefs } from 'pinia'
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useSkipperStore } from '@/stores/skipper.store.ts'
 
 const { err } = useNotification()
@@ -18,7 +17,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  close: [],
+  close: []
   skipperUpdated: [id: string, surname: string]
 }>()
 
@@ -30,12 +29,20 @@ const handleType = (id: string, surname: string) => {
   if (id != props.skipperID) {
     emit('skipperUpdated', id, surname)
   } else {
-    err("Ошибка выбора типа", "Судно уже имеет такого судоводителя")
+    err('Ошибка выбора типа', 'Судно уже имеет такого судоводителя')
   }
 }
-
-onMounted( async() => {
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.isOpen) {
+    handleClose()
+  }
+}
+onMounted(async () => {
+  document.addEventListener('keydown', handleEscape)
   await fetchSkippers()
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
 })
 </script>
 
@@ -51,10 +58,10 @@ onMounted( async() => {
           v-for="(s, i) in skippers"
           :key="i"
           class="role-item"
-          :class="{disabled: s.id === props.skipperID}"
+          :class="{ disabled: s.id === props.skipperID }"
           @click="handleType(s.id, s.surname)"
         >
-          <span>{{s.surname}} {{s.name}} {{s.patronymic}}</span>
+          <span>{{ s.surname }} {{ s.name }} {{ s.patronymic }}</span>
         </button>
       </div>
     </div>
@@ -80,8 +87,7 @@ onMounted( async() => {
   justify-content: center;
 
   &.active {
-    background-color: rgba(black, 0.1);
-    backdrop-filter: blur(4px);
+    background-color: rgba(black, 0.2);
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
@@ -99,7 +105,7 @@ onMounted( async() => {
   width: 500px;
   position: relative;
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 8px;
 
   & > h1 {
     font-size: 24px;
@@ -121,11 +127,11 @@ onMounted( async() => {
       font-weight: 400;
       opacity: 0.7;
     }
-    &.disabled{
+    &.disabled {
       opacity: 0.5;
       pointer-events: none;
     }
-    &:hover{
+    &:hover {
       background: rgba(gray, 0.15);
 
       & > span {
@@ -137,15 +143,15 @@ onMounted( async() => {
 .modal-close-button {
   cursor: pointer;
   padding: 4px;
-  border-radius: 32px;
+  border-radius: 8px;
   background: $white;
   position: absolute;
   top: 0;
   right: calc(-36px - 12px);
 
-  opacity: 0.6;
+  opacity: 0.8;
   &:hover {
-    opacity: 0.8;
+    opacity: 0.9;
   }
   & > img {
     width: 28px;

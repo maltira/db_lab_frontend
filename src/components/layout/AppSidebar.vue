@@ -83,10 +83,15 @@ const selectElement = (block: 'tables' | 'queries' | 'forms', id: number) => {
   display: flex;
   flex-direction: column;
   gap: 25px;
+
   min-width: 300px;
-  min-height: 100vh;
+  height: 100vh;
+
   padding: 30px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
+
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 .sidebar_block {
   display: flex;

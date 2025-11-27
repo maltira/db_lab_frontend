@@ -1,35 +1,67 @@
 <script setup lang="ts">
-
 import { useNotification } from '@/composables/useNotification.ts'
+import { onMounted, onUnmounted } from 'vue'
 
 const { err } = useNotification()
 
-const results: ('Годно к эксплутации' | 'Годно с замечаниями' | 'Ограниченно годно' | 'Не годно к эксплутации')[] = [
-  'Годно к эксплутации', 'Годно с замечаниями', 'Ограниченно годно', 'Не годно к эксплутации'
-]
+const results: (
+  | 'Годно к эксплутации'
+  | 'Годно с замечаниями'
+  | 'Ограниченно годно'
+  | 'Не годно к эксплутации'
+)[] = ['Годно к эксплутации', 'Годно с замечаниями', 'Ограниченно годно', 'Не годно к эксплутации']
 
 interface Props {
   isOpen: boolean
-  result: 'Годно к эксплутации' | 'Годно с замечаниями' | 'Ограниченно годно' | 'Не годно к эксплутации' | null // текущий result
+  result:
+    | 'Годно к эксплутации'
+    | 'Годно с замечаниями'
+    | 'Ограниченно годно'
+    | 'Не годно к эксплутации'
+    | null // текущий result
 }
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  close: [],
-  resultUpdated: [res: 'Годно к эксплутации' | 'Годно с замечаниями' | 'Ограниченно годно' | 'Не годно к эксплутации']
+  close: []
+  resultUpdated: [
+    res:
+      | 'Годно к эксплутации'
+      | 'Годно с замечаниями'
+      | 'Ограниченно годно'
+      | 'Не годно к эксплутации',
+  ]
 }>()
 
 const handleClose = () => {
   emit('close')
 }
 
-const handleResult = (res: 'Годно к эксплутации' | 'Годно с замечаниями' | 'Ограниченно годно' | 'Не годно к эксплутации') => {
+const handleResult = (
+  res:
+    | 'Годно к эксплутации'
+    | 'Годно с замечаниями'
+    | 'Ограниченно годно'
+    | 'Не годно к эксплутации',
+) => {
   if (res != props.result) {
     emit('resultUpdated', res)
   } else {
-    err("Ошибка выбора результата", "Этот результат уже выбран")
+    err('Ошибка выбора результата', 'Этот результат уже выбран')
   }
 }
+
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.isOpen) {
+    handleClose()
+  }
+}
+onMounted(() => {
+  document.addEventListener('keydown', handleEscape)
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
+})
 </script>
 
 <template>
@@ -44,10 +76,10 @@ const handleResult = (res: 'Годно к эксплутации' | 'Годно 
           v-for="(s, i) in results"
           :key="i"
           class="role-item"
-          :class="{disabled: s === props.result}"
+          :class="{ disabled: s === props.result }"
           @click="handleResult(s)"
         >
-          <span>{{s}}</span>
+          <span>{{ s }}</span>
         </button>
       </div>
     </div>
@@ -73,15 +105,10 @@ const handleResult = (res: 'Годно к эксплутации' | 'Годно 
   justify-content: center;
 
   &.active {
-    background-color: rgba(black, 0.1);
-    backdrop-filter: blur(4px);
+    background-color: rgba(black, 0.2);
     visibility: visible;
     pointer-events: auto;
     opacity: 1;
-
-    &.dark-theme {
-      background: rgba(white, 0.1);
-    }
   }
 }
 .modal-content {
@@ -92,7 +119,7 @@ const handleResult = (res: 'Годно к эксплутации' | 'Годно 
   width: 500px;
   position: relative;
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 8px;
 
   & > h1 {
     font-size: 24px;
@@ -114,11 +141,11 @@ const handleResult = (res: 'Годно к эксплутации' | 'Годно 
       font-weight: 400;
       opacity: 0.7;
     }
-    &.disabled{
+    &.disabled {
       opacity: 0.5;
       pointer-events: none;
     }
-    &:hover{
+    &:hover {
       background: rgba(gray, 0.15);
 
       & > span {
@@ -130,15 +157,15 @@ const handleResult = (res: 'Годно к эксплутации' | 'Годно 
 .modal-close-button {
   cursor: pointer;
   padding: 4px;
-  border-radius: 32px;
+  border-radius: 8px;
   background: $white;
   position: absolute;
   top: 0;
   right: calc(-36px - 12px);
 
-  opacity: 0.6;
+  opacity: 0.8;
   &:hover {
-    opacity: 0.8;
+    opacity: 0.9;
   }
   & > img {
     width: 28px;

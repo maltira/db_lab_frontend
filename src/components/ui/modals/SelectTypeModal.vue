@@ -1,9 +1,8 @@
 <script setup lang="ts">
-
 import { useNotification } from '@/composables/useNotification.ts'
 import { useShipStore } from '@/stores/ship.store.ts'
 import { storeToRefs } from 'pinia'
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 
 const { err } = useNotification()
 
@@ -18,7 +17,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  close: [],
+  close: []
   typeUpdated: [id: string, name: string]
 }>()
 
@@ -30,12 +29,20 @@ const handleType = (id: string, name: string) => {
   if (id != props.typeID) {
     emit('typeUpdated', id, name)
   } else {
-    err("Ошибка выбора типа", "Судно уже имеет такой тип")
+    err('Ошибка выбора типа', 'Судно уже имеет такой тип')
   }
 }
-
-onMounted( async() => {
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.isOpen) {
+    handleClose()
+  }
+}
+onMounted(async () => {
+  document.addEventListener('keydown', handleEscape)
   await fetchTypes()
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
 })
 </script>
 
@@ -51,10 +58,10 @@ onMounted( async() => {
           v-for="(t, i) in types"
           :key="i"
           class="role-item"
-          :class="{disabled: t.id === props.typeID}"
+          :class="{ disabled: t.id === props.typeID }"
           @click="handleType(t.id, t.name)"
         >
-          <span>{{t.name}}</span>
+          <span>{{ t.name }}</span>
         </button>
       </div>
     </div>
@@ -80,8 +87,7 @@ onMounted( async() => {
   justify-content: center;
 
   &.active {
-    background-color: rgba(black, 0.1);
-    backdrop-filter: blur(4px);
+    background-color: rgba(black, 0.2);
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
@@ -98,7 +104,7 @@ onMounted( async() => {
   width: 500px;
   position: relative;
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 8px;
 
   & > h1 {
     font-size: 24px;
@@ -120,11 +126,11 @@ onMounted( async() => {
       font-weight: 400;
       opacity: 0.7;
     }
-    &.disabled{
+    &.disabled {
       opacity: 0.5;
       pointer-events: none;
     }
-    &:hover{
+    &:hover {
       background: rgba(gray, 0.15);
 
       & > span {
@@ -136,15 +142,15 @@ onMounted( async() => {
 .modal-close-button {
   cursor: pointer;
   padding: 4px;
-  border-radius: 32px;
+  border-radius: 8px;
   background: $white;
   position: absolute;
   top: 0;
   right: calc(-36px - 12px);
 
-  opacity: 0.6;
+  opacity: 0.8;
   &:hover {
-    opacity: 0.8;
+    opacity: 0.9;
   }
   & > img {
     width: 28px;

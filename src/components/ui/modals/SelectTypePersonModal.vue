@@ -1,12 +1,10 @@
 <script setup lang="ts">
-
 import { useNotification } from '@/composables/useNotification.ts'
+import { onMounted, onUnmounted } from 'vue'
 
 const { err } = useNotification()
 
-const results: ('Физическое' | 'Юридическое')[] = [
-  'Физическое', 'Юридическое'
-]
+const results: ('Физическое' | 'Юридическое')[] = ['Физическое', 'Юридическое']
 
 interface Props {
   isOpen: boolean
@@ -15,7 +13,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  close: [],
+  close: []
   typeUpdated: [res: 'Физическое' | 'Юридическое']
 }>()
 
@@ -27,9 +25,21 @@ const handleResult = (res: 'Физическое' | 'Юридическое') =>
   if (res != props.type) {
     emit('typeUpdated', res)
   } else {
-    err("Ошибка выбора типа лица", "Этот типа лица уже выбран")
+    err('Ошибка выбора типа лица', 'Этот типа лица уже выбран')
   }
 }
+
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.isOpen) {
+    handleClose()
+  }
+}
+onMounted(() => {
+  document.addEventListener('keydown', handleEscape)
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
+})
 </script>
 
 <template>
@@ -44,10 +54,10 @@ const handleResult = (res: 'Физическое' | 'Юридическое') =>
           v-for="(s, i) in results"
           :key="i"
           class="role-item"
-          :class="{disabled: s === props.type}"
+          :class="{ disabled: s === props.type }"
           @click="handleResult(s)"
         >
-          <span>{{s}}</span>
+          <span>{{ s }}</span>
         </button>
       </div>
     </div>
@@ -73,15 +83,11 @@ const handleResult = (res: 'Физическое' | 'Юридическое') =>
   justify-content: center;
 
   &.active {
-    background-color: rgba(black, 0.1);
-    backdrop-filter: blur(4px);
+    background-color: rgba(black, 0.2);
+
     visibility: visible;
     pointer-events: auto;
     opacity: 1;
-
-    &.dark-theme {
-      background: rgba(white, 0.1);
-    }
   }
 }
 .modal-content {
@@ -92,7 +98,7 @@ const handleResult = (res: 'Физическое' | 'Юридическое') =>
   width: 500px;
   position: relative;
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 8px;
 
   & > h1 {
     font-size: 24px;
@@ -114,11 +120,11 @@ const handleResult = (res: 'Физическое' | 'Юридическое') =>
       font-weight: 400;
       opacity: 0.7;
     }
-    &.disabled{
+    &.disabled {
       opacity: 0.5;
       pointer-events: none;
     }
-    &:hover{
+    &:hover {
       background: rgba(gray, 0.15);
 
       & > span {
@@ -130,7 +136,7 @@ const handleResult = (res: 'Физическое' | 'Юридическое') =>
 .modal-close-button {
   cursor: pointer;
   padding: 4px;
-  border-radius: 32px;
+  border-radius: 8px;
   background: $white;
   position: absolute;
   top: 0;

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 interface Props {
   isOpen: boolean
 }
 const props = defineProps<Props>()
 
-const filter = ref<string>("")
+const filter = ref<string>('')
 
 const emit = defineEmits<{
-  close: [],
+  close: []
   filterUpdated: [res: string]
 }>()
 
@@ -22,6 +22,18 @@ const handleResult = () => {
   emit('filterUpdated', filter.value)
   filter.value = ''
 }
+
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.isOpen) {
+    handleClose()
+  }
+}
+onMounted(() => {
+  document.addEventListener('keydown', handleEscape)
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
+})
 </script>
 
 <template>
@@ -32,8 +44,13 @@ const handleResult = () => {
       </div>
       <h1>Введите запрос</h1>
       <div class="modal-body">
-        <input v-model="filter" @keyup.enter="handleResult" class="role-item" placeholder="Введите запрос">
-        <button @click="handleResult" :class="{disabled: !filter}">Поиск</button>
+        <input
+          v-model="filter"
+          @keyup.enter="handleResult"
+          class="role-item"
+          placeholder="Введите запрос"
+        />
+        <button @click="handleResult" :class="{ disabled: !filter }">Поиск</button>
       </div>
     </div>
   </div>
@@ -58,15 +75,10 @@ const handleResult = () => {
   justify-content: center;
 
   &.active {
-    background-color: rgba(black, 0.1);
-    backdrop-filter: blur(4px);
+    background-color: rgba(black, 0.2);
     visibility: visible;
     pointer-events: auto;
     opacity: 1;
-
-    &.dark-theme {
-      background: rgba(white, 0.1);
-    }
   }
 }
 .modal-content {
@@ -77,7 +89,7 @@ const handleResult = () => {
   width: 500px;
   position: relative;
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 8px;
 
   & > h1 {
     font-size: 24px;
@@ -89,7 +101,8 @@ const handleResult = () => {
   flex-direction: column;
   gap: 10px;
 
-  & > .role-item, & > button {
+  & > .role-item,
+  & > button {
     width: 100%;
     height: 48px;
     padding: 0 15px;
@@ -99,11 +112,11 @@ const handleResult = () => {
       font-weight: 400;
       opacity: 0.7;
     }
-    &.disabled{
+    &.disabled {
       opacity: 0.5;
       pointer-events: none;
     }
-    &:hover{
+    &:hover {
       background: rgba(gray, 0.15);
 
       & > span {
@@ -116,7 +129,7 @@ const handleResult = () => {
     background: $black;
     color: $white;
 
-    &:hover{
+    &:hover {
       background: rgba($black, 0.8);
     }
     &.disabled {
@@ -128,15 +141,15 @@ const handleResult = () => {
 .modal-close-button {
   cursor: pointer;
   padding: 4px;
-  border-radius: 32px;
+  border-radius: 8px;
   background: $white;
   position: absolute;
   top: 0;
   right: calc(-36px - 12px);
 
-  opacity: 0.6;
+  opacity: 0.8;
   &:hover {
-    opacity: 0.8;
+    opacity: 0.9;
   }
   & > img {
     width: 28px;
