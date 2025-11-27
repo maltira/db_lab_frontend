@@ -10,6 +10,7 @@ import { useNotification } from '@/composables/useNotification.ts'
 import router from '@/router'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useRoute } from 'vue-router'
+import SelectTypePersonModal from '@/components/ui/modals/SelectTypePersonModal.vue'
 
 const { success, err } = useNotification()
 
@@ -36,6 +37,15 @@ const address = ref('')
 const type_of_person = ref<'Физическое' | 'Юридическое' | null>(null)
 const birthday = ref<Date | null>(null)
 const phone = ref('')
+
+const isTypeModalOpen = ref(false)
+const toggleTypeModal = () => {
+  isTypeModalOpen.value = !isTypeModalOpen.value
+}
+const handleTypeUpdate = (r: | 'Физическое' | 'Юридическое') => {
+  type_of_person.value = r
+  isTypeModalOpen.value = false
+}
 
 const isCalendarOpen = ref(false)
 const containerRef = ref<HTMLElement | null>(null)
@@ -185,7 +195,9 @@ onUnmounted(() => {
       </div>
       <div class="item">
         <p>Тип лица:</p>
-        <input type="text" v-model="type_of_person" placeholder="Тип лица" />
+        <button @click="toggleTypeModal">
+          {{ type_of_person ? type_of_person : 'Тип лица' }}
+        </button>
       </div>
       <div class="item" :style="{ position: 'relative' }">
         <p>Дата рождения:</p>
@@ -229,6 +241,8 @@ onUnmounted(() => {
       <button v-if="id" class="delete" @click="deleteOwner">Удалить запись</button>
     </div>
   </div>
+
+  <SelectTypePersonModal :is-open="isTypeModalOpen" :type="type_of_person" @close="isTypeModalOpen=false" @type-updated="handleTypeUpdate" />
 </template>
 
 <style scoped lang="scss">
