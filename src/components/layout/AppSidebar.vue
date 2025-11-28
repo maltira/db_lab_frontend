@@ -4,11 +4,12 @@ import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { storeToRefs } from 'pinia'
 
 const sidebarStore = useSidebarStore()
-const { allTables, allForms, allQueries, selectedRoute } = storeToRefs(sidebarStore)
+const { allTables, allForms, allQueries, allReports, selectedRoute } = storeToRefs(sidebarStore)
 
 const isTablesOpen = ref(false)
 const isQueriesOpen = ref(false)
-const isFormsOpen = ref(true)
+const isFormsOpen = ref(false)
+const isReportsOpen = ref(false)
 
 const toggleTables = () => {
   isTablesOpen.value = !isTablesOpen.value
@@ -19,8 +20,10 @@ const toggleQueries = () => {
 const toggleForms = () => {
   isFormsOpen.value = !isFormsOpen.value
 }
-
-const selectElement = (block: 'tables' | 'queries' | 'forms', id: number) => {
+const toggleReports = () => {
+  isReportsOpen.value = !isReportsOpen.value
+}
+const selectElement = (block: 'tables' | 'queries' | 'forms' | 'reports', id: number) => {
   selectedRoute.value = { block: block, id: id }
 }
 </script>
@@ -53,9 +56,9 @@ const selectElement = (block: 'tables' | 'queries' | 'forms', id: number) => {
         />
       </div>
       <div class="block_items" v-if="isQueriesOpen && allQueries.length > 0">
-        <div class="item" v-for="query in allQueries" :key="query.id" @click="selectElement('queries', query.id)" :class="{active: selectedRoute.block === 'queries' && selectedRoute.id === query.id}">
-          <p>{{ query }}</p>
-        </div>
+        <RouterLink :to="query.route" class="item" v-for="query in allQueries" :key="query.id" @click="selectElement('queries', query.id)" :class="{active: selectedRoute.block === 'queries' && selectedRoute.id === query.id}">
+          <p>{{ query.name }}</p>
+        </RouterLink>
       </div>
       <p v-else-if="isQueriesOpen && allQueries.length === 0" class="empty_block">Здесь пусто</p>
     </div>
@@ -74,6 +77,22 @@ const selectElement = (block: 'tables' | 'queries' | 'forms', id: number) => {
         </RouterLink>
       </div>
       <p v-else-if="isFormsOpen && allForms.length === 0" class="empty_block">Здесь пусто</p>
+    </div>
+    <div class="sidebar_block">
+      <div class="title" @click="toggleReports">
+        <h1>Отчёты</h1>
+        <img
+          src="/icons/arrow.png"
+          alt="arrow"
+          :style="{ transform: isReportsOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }"
+        />
+      </div>
+      <div class="block_items" v-if="isReportsOpen && allReports.length > 0">
+        <RouterLink :to="r.route" class="item" v-for="r in allReports" :key="r.id" @click="selectElement('reports', r.id)" :class="{active: selectedRoute.block === 'reports' && selectedRoute.id === r.id}">
+          <p>{{ r.name }}</p>
+        </RouterLink>
+      </div>
+      <p v-else-if="isReportsOpen && allReports.length === 0" class="empty_block">Здесь пусто</p>
     </div>
   </div>
 </template>
@@ -121,21 +140,22 @@ const selectElement = (block: 'tables' | 'queries' | 'forms', id: number) => {
 
     & > .item {
       padding: 12px 20px;
-      background: transparent;
+      border-left: 4px solid transparent;
       cursor: pointer;
       opacity: 0.7;
-      border-radius: 34px;
 
       &.active{
-        background: #ccff6c !important;
+        border-left: 4px solid #ccff6c;
         opacity: 0.99;
         pointer-events: none !important;
         cursor: default !important;
+
+        transform: translateX(5px);
       }
 
       &:hover {
         opacity: 0.99;
-        background: rgba(#ccff6c, 0.25);
+        background: rgba(gray, 0.05);
       }
 
       & > p {

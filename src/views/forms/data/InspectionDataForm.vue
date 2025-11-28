@@ -60,6 +60,12 @@ const reloadInspections = async () => {
 const goToInspection = async (id: string) => {
   await router.push(`/form/input/inspection/${id}`)
 }
+const goToInspector = async (id: string) => {
+  await router.push(`/form/input/inspector/${id}`)
+}
+const goToShip = async (id: string) => {
+  await router.push(`/form/input/ship/${id}`)
+}
 
 onMounted(async () => {
   await fetchInspections()
@@ -103,10 +109,13 @@ onMounted(async () => {
       <button @click="filter = ''">← Вернуться</button>
       <p class="mes-p">Результаты по запросу «{{filter}}»:</p>
     </div>
-    <Skeleton height="300px" v-if="isLoading && !error" />
-    <p v-else-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
-    <table v-else-if="allInspections.length > 0">
-      <thead>
+    <div class="container-table">
+      <Skeleton height="20px" width="200px" v-if="isLoading && !error" />
+      <Skeleton height="300px" v-if="isLoading && !error" />
+
+      <p v-if="!isLoading && !error && allInspections.length > 0" class="mes-p">Количество записей: {{allInspections.length}}</p>
+      <table v-if="!isLoading && !error && allInspections.length > 0">
+        <thead>
         <tr>
           <td>Инспектор</td>
           <td>Номер судна</td>
@@ -114,11 +123,11 @@ onMounted(async () => {
           <td>Результат осмотра</td>
           <td>Следующая дата</td>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <tr v-for="(ins, i) in allInspections" :key="i" @click="goToInspection(ins.id)">
-          <td>{{ ins.Inspector!.surname }}</td>
-          <td>{{ ins.Ship!.ship_number }}</td>
+          <td class="active-td" @click.stop @click="goToInspector(ins.Inspector!.id)">{{ ins.Inspector!.surname }}</td>
+          <td class="active-td" @click.stop @click="goToShip(ins.Ship!.id)">{{ ins.Ship!.ship_number }}</td>
           <td>{{ formatDate(ins.inspection_date) }}</td>
           <td
             :style="{
@@ -135,9 +144,12 @@ onMounted(async () => {
           </td>
           <td>{{ formatDate(ins.next_inspection_date) }}</td>
         </tr>
-      </tbody>
-    </table>
-    <p v-else class="mes-p">Не найдено проведенных осмотров</p>
+        </tbody>
+      </table>
+      <p v-else-if="!isLoading && !error" class="mes-p">Ничего не найдено</p>
+
+      <p v-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+    </div>
     <div class="actions">
       <button @click="router.push('/form/input/inspection')">
         <img src="/icons/add.svg" alt="add" />
@@ -200,10 +212,16 @@ td {
 
   border-bottom: 1px solid rgba(gray, 0.15);
 }
+.container-table{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 table {
   background: rgba(gray, 0.07);
   padding: 5px 15px 15px 15px;
   border-radius: 16px;
+  width: 100%;
   & > thead {
     & > tr > td {
       padding: 15px 0;
@@ -215,8 +233,8 @@ table {
       & > td {
         padding: 5px 0;
 
-        &.address {
-          max-width: 250px;
+        &.active-td:hover{
+          background-color: rgba(gray, 0.08);
         }
       }
       &:last-child {

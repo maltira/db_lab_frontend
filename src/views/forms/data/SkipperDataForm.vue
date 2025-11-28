@@ -74,33 +74,35 @@ onMounted(async () => {
       <button @click="filter = ''">← Вернуться</button>
       <p class="mes-p">Результаты по запросу «{{filter}}»:</p>
     </div>
-    <Skeleton height="300px" v-if="isLoading && !error" />
+    <div class="container-table">
+      <Skeleton height="20px" width="200px" v-if="isLoading && !error" />
+      <Skeleton height="300px" v-if="isLoading && !error" />
 
-    <p v-else-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+      <p v-if="!isLoading && !error && allSkippers.length > 0" class="mes-p">Количество записей: {{allSkippers.length}}</p>
+      <table v-if="!isLoading && !error && allSkippers.length > 0">
+        <thead>
+        <tr>
+          <td>Имя</td>
+          <td>Фамилия</td>
+          <td>Отчество</td>
+          <td>Номер удостоверения</td>
+          <td></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(sk, i) in allSkippers" :key="i" @click="goToSkipper(sk.id)">
+          <td>{{ sk.name }}</td>
+          <td>{{ sk.surname }}</td>
+          <td>{{ sk.patronymic! }}</td>
+          <td>{{ sk.id_number }}</td>
+          <td class="list-button" @click.stop @click="toggleShipsModal(sk.id)">Список судов →</td>
+        </tr>
+        </tbody>
+      </table>
+      <p v-else-if="!isLoading && !error" class="mes-p">Ничего не найдено</p>
 
-    <table v-else-if="allSkippers.length > 0">
-      <thead>
-      <tr>
-        <td>Имя</td>
-        <td>Фамилия</td>
-        <td>Отчество</td>
-        <td>Номер удостоверения</td>
-        <td></td>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(sk, i) in allSkippers" :key="i" @click="goToSkipper(sk.id)">
-        <td>{{ sk.name }}</td>
-        <td>{{ sk.surname }}</td>
-        <td>{{ sk.patronymic! }}</td>
-        <td>{{ sk.id_number }}</td>
-        <td class="list-button" @click.stop @click="toggleShipsModal(sk.id)">Список судов →</td>
-      </tr>
-      </tbody>
-    </table>
-
-    <p v-else class="mes-p">Ничего не найдено</p>
-
+      <p v-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+    </div>
     <div class="actions">
       <button @click="router.push('/form/input/skipper')">
         <img src="/icons/add.svg" alt="add" />
@@ -168,10 +170,16 @@ td {
     font-size: 14px;
   }
 }
+.container-table{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 table {
   background: rgba(gray, 0.07);
   padding: 5px 15px 15px 15px;
   border-radius: 16px;
+  width: 100%;
   & > thead {
     & > tr > td {
       padding: 15px 0;

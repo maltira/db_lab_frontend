@@ -85,7 +85,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 35px;
   background: $background;
-  width: 800px;
+  width: 600px;
   position: relative;
   padding: 40px;
   border-radius: 8px;
@@ -104,6 +104,7 @@ onUnmounted(() => {
     padding: 0 15px;
     border-radius: 12px;
     background: rgba(gray, 0.1);
+    font-size: 16px;
   }
 }
 .modal-close-button {

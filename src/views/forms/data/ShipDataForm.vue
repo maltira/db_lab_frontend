@@ -61,7 +61,12 @@ const reloadShips = async () => {
 const goToShip = async (id: string) => {
   await router.push(`/form/input/ship/${id}`)
 }
-
+const goToOwner = async (id: string) => {
+  await router.push(`/form/input/owner/${id}`)
+}
+const goToSkipper = async (id: string) => {
+  await router.push(`/form/input/skipper/${id}`)
+}
 onMounted(async () => {
   await fetchShips()
   if (typeof route.meta.page_id === 'number')
@@ -83,7 +88,7 @@ onMounted(async () => {
       <div class="text">
         <h1>ГИМС РФ</h1>
         <p>
-          Вы находитесь на странице суден
+          Вы находитесь на странице судов
           {{ currentOwner ? 'владельца «' + currentOwner + '»' : '' }}
         </p>
       </div>
@@ -92,10 +97,13 @@ onMounted(async () => {
       <button @click="filter = ''">← Вернуться</button>
       <p class="mes-p">Результаты по запросу «{{filter}}»:</p>
     </div>
-    <Skeleton v-if="isLoading && !error" height="300px" />
-    <p v-else-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
-    <table v-else-if="allShips.length > 0">
-      <thead>
+    <div class="container-table">
+      <Skeleton height="20px" width="200px" v-if="isLoading && !error" />
+      <Skeleton height="300px" v-if="isLoading && !error" />
+
+      <p v-if="!isLoading && !error && allShips.length > 0" class="mes-p">Количество записей: {{allShips.length}}</p>
+      <table v-if="!isLoading && !error && allShips.length > 0">
+        <thead>
         <tr>
           <td>Тип</td>
           <td>Владелец</td>
@@ -104,12 +112,12 @@ onMounted(async () => {
           <td>Дата регистрации</td>
           <td>Статус регистрации</td>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <tr v-for="(ship, i) in allShips" :key="i" @click="goToShip(ship.id)">
           <td>{{ ship.Type!.name }}</td>
-          <td>{{ ship.Owner!.surname }}</td>
-          <td>{{ ship.Skipper!.surname }}</td>
+          <td class="active-td" @click.stop @click="goToOwner(ship.Owner!.id)">{{ ship.Owner!.surname }}</td>
+          <td class="active-td" @click.stop @click="goToSkipper(ship.Skipper!.id)">{{ ship.Skipper!.surname }}</td>
           <td>{{ ship.ship_number }}</td>
           <td>{{ formatDate(ship.registration_date) }}</td>
           <td
@@ -124,9 +132,12 @@ onMounted(async () => {
             {{ ship.registration_status }}
           </td>
         </tr>
-      </tbody>
-    </table>
-    <p v-else class="mes-p">Ничего не найдено</p>
+        </tbody>
+      </table>
+      <p v-else-if="!isLoading && !error" class="mes-p">Ничего не найдено</p>
+
+      <p v-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+    </div>
     <div class="actions">
       <button @click="router.push('/form/input/ship')">
         <img src="/icons/add.svg" alt="add" />
@@ -184,10 +195,16 @@ td {
 
   border-bottom: 1px solid rgba(gray, 0.15);
 }
+.container-table{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 table {
   background: rgba(gray, 0.07);
   padding: 5px 15px 15px 15px;
   border-radius: 16px;
+  width: 100%;
   & > thead {
     & > tr > td {
       padding: 15px 0;
@@ -199,8 +216,8 @@ table {
       & > td {
         padding: 5px 0;
 
-        &.address {
-          max-width: 250px;
+        &.active-td:hover{
+          background-color: rgba(gray, 0.08);
         }
       }
       &:last-child {

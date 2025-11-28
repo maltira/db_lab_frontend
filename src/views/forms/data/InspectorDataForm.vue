@@ -68,10 +68,13 @@ onMounted(async () => {
       <button @click="filter = ''">← Вернуться</button>
       <p class="mes-p">Результаты по запросу «{{filter}}»:</p>
     </div>
-    <Skeleton height="300px" v-if="isLoading && !error" />
-    <p v-else-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
-    <table v-else-if="allInspectors.length > 0">
-      <thead>
+    <div class="container-table">
+      <Skeleton height="20px" width="200px" v-if="isLoading && !error" />
+      <Skeleton height="300px" v-if="isLoading && !error" />
+
+      <p v-if="!isLoading && !error && allInspectors.length > 0" class="mes-p">Количество записей: {{allInspectors.length}}</p>
+      <table v-if="!isLoading && !error && allInspectors.length > 0">
+        <thead>
         <tr>
           <td>Имя</td>
           <td>Фамилия</td>
@@ -79,8 +82,8 @@ onMounted(async () => {
           <td>Должность</td>
           <td>Номер телефона</td>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <tr v-for="(ins, i) in allInspectors" :key="i" @click="goToInspector(ins.id)">
           <td>{{ ins.name }}</td>
           <td>{{ ins.surname }}</td>
@@ -88,9 +91,12 @@ onMounted(async () => {
           <td>{{ ins.post }}</td>
           <td>{{ ins.phone }}</td>
         </tr>
-      </tbody>
-    </table>
-    <p v-else class="mes-p">Ничего не найдено</p>
+        </tbody>
+      </table>
+      <p v-else-if="!isLoading && !error" class="mes-p">Ничего не найдено</p>
+
+      <p v-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+    </div>
     <div class="actions">
       <button @click="router.push('/form/input/inspector')">
         <img src="/icons/add.svg" alt="add" />
@@ -149,10 +155,16 @@ td {
 
   border-bottom: 1px solid rgba(gray, 0.15);
 }
+.container-table{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 table {
   background: rgba(gray, 0.07);
   padding: 5px 15px 15px 15px;
   border-radius: 16px;
+  width: 100%;
   & > thead {
     & > tr > td {
       padding: 15px 0;

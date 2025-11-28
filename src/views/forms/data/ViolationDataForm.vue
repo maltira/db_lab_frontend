@@ -59,6 +59,12 @@ const reloadViolations = async () => {
 const goToViolation = async (id: string) => {
   await router.push(`/form/input/violation/${id}`)
 }
+const goToInspector = async (id: string) => {
+  await router.push(`/form/input/inspector/${id}`)
+}
+const goToShip = async (id: string) => {
+  await router.push(`/form/input/ship/${id}`)
+}
 
 onMounted(async () => {
   await fetchViolations()
@@ -101,10 +107,13 @@ onMounted(async () => {
       <button @click="filter = ''">← Вернуться</button>
       <p class="mes-p">Результаты по запросу «{{filter}}»:</p>
     </div>
-    <Skeleton height="300px" v-if="isLoading && !error" />
-    <p v-else-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
-    <table v-else-if="allViolations.length > 0">
-      <thead>
+    <div class="container-table">
+      <Skeleton height="20px" width="200px" v-if="isLoading && !error" />
+      <Skeleton height="300px" v-if="isLoading && !error" />
+
+      <p v-if="!isLoading && !error && allViolations.length > 0" class="mes-p">Количество записей: {{allViolations.length}}</p>
+      <table v-if="!isLoading && !error && allViolations.length > 0">
+        <thead>
         <tr>
           <td>Номер судна</td>
           <td>Инспектор</td>
@@ -113,19 +122,22 @@ onMounted(async () => {
           <td>Описание</td>
           <td>Статус</td>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <tr v-for="(v, i) in allViolations" :key="i" @click="goToViolation(v.id)">
-          <td>{{ v.Ship!.ship_number }}</td>
-          <td>{{ v.Inspector!.surname }}</td>
+          <td class="active-td" @click.stop @click="goToShip(v.Ship!.id)">{{ v.Ship!.ship_number }}</td>
+          <td class="active-td" @click.stop @click="goToInspector(v.Inspector!.id)">{{ v.Inspector!.surname }}</td>
           <td>{{ formatDate(v.violation_date) }}</td>
           <td>{{ v.amount }}</td>
           <td>{{ v.description }}</td>
           <td :style="{ color: v.status === 'Исполнено' ? '#70e000' : 'red' }">{{ v.status }}</td>
         </tr>
-      </tbody>
-    </table>
-    <p v-else class="mes-p">Ничего не найдено</p>
+        </tbody>
+      </table>
+      <p v-else-if="!isLoading && !error" class="mes-p">Ничего не найдено</p>
+
+      <p v-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
+    </div>
     <div class="actions">
       <button @click="router.push('/form/input/violation')">
         <img src="/icons/add.svg" alt="add" />
@@ -186,11 +198,20 @@ td {
   padding-left: 6px !important;
 
   border-bottom: 1px solid rgba(gray, 0.15);
+  &.active-td:hover{
+    background-color: rgba(gray, 0.08);
+  }
+}
+.container-table{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 table {
   background: rgba(gray, 0.07);
   padding: 5px 15px 15px 15px;
   border-radius: 16px;
+  width: 100%;
   & > thead {
     & > tr > td {
       padding: 15px 0;

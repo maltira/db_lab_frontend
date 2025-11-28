@@ -7,7 +7,7 @@ interface SidebarElement {
 }
 interface SelectedRoute {
   id: number,
-  block: 'forms' | 'tables' | 'queries',
+  block: 'forms' | 'tables' | 'queries' | 'reports',
 }
 export const useSidebarStore = defineStore('sidebar', {
   state: () => ({
@@ -21,7 +21,17 @@ export const useSidebarStore = defineStore('sidebar', {
       { id: 7, route: "/table/violation", name: "Нарушения" },
       { id: 8, route: "/table/inspection", name: "ТО" },
     ] as SidebarElement[],
-    allQueries: [] as SidebarElement[],
+    allQueries: [
+      { id: 1, route: "/query/get_inactive_ships", name: "Истёкшая регистрация судов" },
+      { id: 2, route: "/query/get_statistic_ships", name: "Статистика по суднам" },
+      { id: 3, route: "/query/get_statistic_violations", name: "Статистика по штрафам" },
+      { id: 4, route: "/query/get_unpaid_violations", name: "Неоплаченные штрафы" },
+      { id: 5, route: "/query/get_statistic_inspectors", name: "Статистика по инспекторам" },
+      { id: 6, route: "/query/get_statistic_inspections", name: "Статистика по техосмотрам" },
+      { id: 7, route: "/query/get_soon_inspections", name: "Предстоящие техосмотры" },
+      { id: 8, route: "/query/get_overdue_inspections", name: "Просроченные техосмотры" },
+
+    ] as SidebarElement[],
     allForms: [
       { id: 0, route: "/", name: "Главная форма" },
       { id: 1, route: '/form/input/owner', name: "ФВВ_Владелец"},
@@ -37,6 +47,9 @@ export const useSidebarStore = defineStore('sidebar', {
       { id: 11, route: '/form/data/violation/ship', name: "ФАД_Нарушения"},
       { id: 12, route: '/form/data/ownership', name: "ФАД_ИсторияВладения"},
       { id: 13, route: '/form/data/skipper', name: "ФАД_Судоводители"},
+    ] as SidebarElement[],
+    allReports: [
+      { id: 1, route: "/report/reestr_ships", name: "Реестр судов" },
     ] as SidebarElement[],
     selectedRoute: { block: 'forms', id: 0 } as SelectedRoute,
   }),

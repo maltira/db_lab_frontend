@@ -266,6 +266,7 @@ onUnmounted(() => {
     <div class="actions">
       <button v-if="id" @click="router.push(`/form/data/violation/ship/${id}`)">Нарушения</button>
       <button v-if="id" @click="router.push(`/form/data/inspections/ship/${id}`)">Осмотры</button>
+      <button v-if="id" @click="router.push(`/form/data/ownership/${id}`)">История владения</button>
       <button
         @click="saveShip"
         class="save"
