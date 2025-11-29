@@ -18,9 +18,12 @@ const { inspections, isLoading, error } = storeToRefs(inspectionStore)
 
 const allInspections = ref<Inspection[]>([])
 const filteringBy = ref<'Неделя' | 'Месяц' | 'Год'>('Неделя')
+const isFilterWindowOpen = ref(true)
 
 const reloadInspections = async () => {
+  isFilterWindowOpen.value = false
   await fetchInspections()
+
   const timeNow = new Date()
   const getD = (date: Date) => {
     return new Date(date)
@@ -28,11 +31,6 @@ const reloadInspections = async () => {
   allInspections.value = inspections.value.filter(s => getD(s.next_inspection_date) >= timeNow && getD(s.next_inspection_date) <= getNewDate())
 }
 
-const handleUpdateFilter = async (filter: 'Неделя' | 'Месяц' | 'Год') => {
-  filteringBy.value = filter
-  console.log(filteringBy.value)
-  await reloadInspections()
-}
 const goToShip = async (id: string) => {
   await router.push(`/form/input/ship/${id}`)
 }
@@ -60,37 +58,38 @@ const getNewDate = (): Date => {
 }
 
 onMounted(async () => {
-  await fetchInspections()
-
-  const timeNow = new Date()
-  const getD = (date: Date) => {
-    return new Date(date)
-  }
-  allInspections.value = inspections.value.filter(s => getD(s.next_inspection_date) >= timeNow && getD(s.next_inspection_date) <= getNewDate())
   if (typeof route.meta.page_id === 'number')
-    selectedRoute.value = { block: 'reports', id: route.meta.page_id }
+    selectedRoute.value = { block: 'queries', id: route.meta.page_id }
 })
 </script>
 
 <template>
-  <div class="input-view">
+  <div class="filter-window" v-if="isFilterWindowOpen">
+    <div class="filter-item">
+      <p>Выберите период</p>
+      <div class="buttons">
+        <button :class="{ active: filteringBy === 'Неделя' }" @click="filteringBy = 'Неделя'">
+          Неделя
+        </button>
+        <button :class="{ active: filteringBy === 'Месяц' }" @click="filteringBy = 'Месяц'">
+          Месяц
+        </button>
+        <button :class="{ active: filteringBy === 'Год' }" @click="filteringBy = 'Год'">
+          Год
+        </button>
+      </div>
+    </div>
+    <button class="continue" @click="reloadInspections" :class="{disabled: !filteringBy}">
+      Продолжить
+    </button>
+  </div>
+  <div class="input-view" v-else>
     <div class="title">
       <div class="text">
         <h1>Запрос «Предстоящие техосмотры»</h1>
-        <p>Вывод информации о предстовящих осмотрах (неделя/месяц/год)</p>
+        <p>Вывод информации о предстовящих осмотрах ({{filteringBy}}) <span @click="isFilterWindowOpen = true">Изменить</span></p>
         <p>Найдено записей: {{ allInspections.length }}</p>
       </div>
-    </div>
-    <div class="buttons">
-      <button :class="{ active: filteringBy === 'Неделя' }" @click="handleUpdateFilter('Неделя')">
-        Неделя
-      </button>
-      <button :class="{ active: filteringBy === 'Месяц' }" @click="handleUpdateFilter('Месяц')">
-        Месяц
-      </button>
-      <button :class="{ active: filteringBy === 'Год' }" @click="handleUpdateFilter('Год')">
-        Год
-      </button>
     </div>
     <Skeleton v-if="isLoading && !error" height="300px" />
     <p v-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
@@ -150,41 +149,89 @@ onMounted(async () => {
   gap: 20px;
   position: relative;
   padding-bottom: 100px;
+}
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
 
-  & > .title {
+  & > img {
+    width: 100px;
+  }
+  & > .text {
+    & > h1,
+    & > p {
+      text-align: center;
+    }
+    & > p {
+      margin-top: 10px;
+      font-size: 16px;
+      opacity: 0.7;
+
+      & > span {
+        opacity: 0.8;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: underline;
+        color: #6378ff;
+
+        &:hover{
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+.filter-window {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  gap: 40px;
+
+  & > .filter-item {
     display: flex;
     flex-direction: column;
-    align-items: start;
-    gap: 15px;
+    align-items: center;
+    gap: 20px;
 
-    & > img {
-      width: 100px;
+    & > p {
+      font-size: 16px;
     }
-    & > .text {
-      & > h1,
-      & > p {
-        text-align: start;
-      }
-      & > p {
-        margin-top: 10px;
-        font-size: 16px;
-        opacity: 0.7;
-      }
+  }
+  & > .continue{
+    background: rgba(gray, 0.1);
+    border: 1px solid rgba(gray, 0.3);
+    width: 350px;
+    height: 48px;
+    border-radius: 8px;
+    opacity: 0.8;
+
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.1;
+    }
+
+    &:hover{
+      opacity: 0.99;
     }
   }
 }
 .buttons {
   display: flex;
   gap: 10px;
-  justify-content: center;
   & > button {
     padding: 6px 30px;
     opacity: 0.6;
+    border: 1px solid rgba(gray, 0.2);
+    border-radius: 4px;
 
     &.active {
       opacity: 1;
-      background: rgba(gray, 0.1);
-      border-radius: 4px;
+      background: rgba(gray, 0.05);
     }
   }
 }

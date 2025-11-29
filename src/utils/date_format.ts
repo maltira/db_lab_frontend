@@ -13,3 +13,19 @@ export const formatDate = (date: string | Date): string => {
 
   return `${day}.${month}.${year}`
 }
+
+export const compareDates = (date1: Date, date2: Date): boolean => {
+  return date1.toDateString() === date2.toDateString()
+}
+
+export const isBeforeOrEqual = (date1: Date, date2: Date): boolean => {
+  const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate())
+  const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate())
+  return d1 <= d2
+}
+
+export const isAfterOrEqual = (date1: Date, date2: Date): boolean => {
+  const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate())
+  const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate())
+  return d1 >= d2
+}

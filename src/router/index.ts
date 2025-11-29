@@ -72,28 +72,43 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/query/get_inactive_ships',
     name: 'ShipInactiveQuery',
-    component: GetInactiveShips
+    component: GetInactiveShips,
+    meta: {
+      page_id: 1
+    }
   },
   {
     path: '/query/get_unpaid_violations',
     name: 'UnpaidViolationQuery',
-    component: UnpaidViolations
-  },
-  {
-    path: '/query/get_overdue_inspections',
-    name: 'OverdueInspectionQuery',
-    component: OverdueInspections
+    component: UnpaidViolations,
+    meta: {
+      page_id: 4
+    }
   },
   {
     path: '/query/get_soon_inspections',
     name: 'SoonInspectionQuery',
-    component: SoonInspections
+    component: SoonInspections,
+    meta: {
+      page_id: 7
+    }
+  },
+  {
+    path: '/query/get_overdue_inspections',
+    name: 'OverdueInspectionQuery',
+    component: OverdueInspections,
+    meta: {
+      page_id: 8
+    }
   },
   // Отчёты
   {
     path: '/report/reestr_ships',
     name: 'ShipReestrReport',
-    component: ReestrShips
+    component: ReestrShips,
+    meta: {
+      page_id: 1
+    }
   },
   // ФВВ
   {

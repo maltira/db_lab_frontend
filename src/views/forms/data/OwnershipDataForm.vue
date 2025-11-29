@@ -8,7 +8,6 @@ import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useRoute } from 'vue-router'
 import SearchFilterModal from '@/components/ui/modals/SearchFilterModal.vue'
 import { useOwnershipStore } from '@/stores/ownership.store.ts'
-import type { Violation } from '@/types/violation.ts'
 import type { Ownership } from '@/types/ownership.ts'
 
 interface Props {

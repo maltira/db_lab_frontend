@@ -34,7 +34,7 @@ onMounted(async () => {
   await fetchShips()
   allShips.value = ships.value.filter(s => s.registration_status === 'Истёкший')
   if (typeof route.meta.page_id === 'number')
-    selectedRoute.value = { block: 'reports', id: route.meta.page_id }
+    selectedRoute.value = { block: 'queries', id: route.meta.page_id }
 })
 </script>
 

@@ -44,7 +44,7 @@ onMounted(async () => {
   allInspections.value = inspections.value.filter(s => getNewDate(s.next_inspection_date) < timeNow)
 
   if (typeof route.meta.page_id === 'number')
-    selectedRoute.value = { block: 'reports', id: route.meta.page_id }
+    selectedRoute.value = { block: 'queries', id: route.meta.page_id }
 })
 </script>
 

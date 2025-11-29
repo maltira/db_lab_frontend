@@ -2,7 +2,7 @@
 import Skeleton from '@/components/ui/Skeleton.vue'
 import { storeToRefs } from 'pinia'
 import { useShipStore } from '@/stores/ship.store.ts'
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { formatDate } from '@/utils/date_format.ts'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useRoute } from 'vue-router'
