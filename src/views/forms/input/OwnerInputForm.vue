@@ -48,7 +48,6 @@ const handleTypeUpdate = (r: | 'Физическое' | 'Юридическое'
 }
 
 const isCalendarOpen = ref(false)
-const containerRef = ref<HTMLElement | null>(null)
 const toggleCalendar = () => {
   isCalendarOpen.value = !isCalendarOpen.value
 }
@@ -58,7 +57,8 @@ const handleDateSelect = (date: Date | null) => {
   }
 }
 const handleClickOutside = (event: MouseEvent) => {
-  if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
+  const calendarElement = document.getElementById('containerRef')
+  if (calendarElement && !calendarElement.contains(event.target as Node)) {
     isCalendarOpen.value = false
   }
 }
@@ -199,9 +199,9 @@ onUnmounted(() => {
           {{ type_of_person ? type_of_person : 'Тип лица' }}
         </button>
       </div>
-      <div class="item" :style="{ position: 'relative' }">
+      <div class="item" :style="{ position: 'relative' }" id="containerRef">
         <p>Дата рождения:</p>
-        <button @click="toggleCalendar" ref="containerRef">
+        <button @click="toggleCalendar">
           {{ birthday ? formatDate(birthday) : 'Дата рождения' }}
           <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>

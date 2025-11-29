@@ -69,7 +69,6 @@ const handleVStatusUpdate = (r: 'Исполнено' | 'Не исполнено'
 }
 
 const isCalendarOpen = ref(false)
-const container4Ref = ref<HTMLElement | null>(null)
 const toggleCalendar = () => {
   isCalendarOpen.value = !isCalendarOpen.value
 }
@@ -79,7 +78,8 @@ const handleDateSelect = (date: Date | null) => {
   }
 }
 const handleClickOutside = (event: MouseEvent) => {
-  if (container4Ref.value && !container4Ref.value.contains(event.target as Node)) {
+  const calendarElement = document.getElementById('container4Ref')
+  if (calendarElement && !calendarElement.contains(event.target as Node)) {
     isCalendarOpen.value = false
   }
 }
@@ -218,9 +218,9 @@ onUnmounted(() => {
           {{ shipNumber ? shipNumber : 'Судно' }}
         </button>
       </div>
-      <div class="item" :style="{ position: 'relative' }">
+      <div class="item" :style="{ position: 'relative' }" id="container4Ref">
         <p>Дата нарушения:</p>
-        <button @click="toggleCalendar" ref="container4Ref">
+        <button @click="toggleCalendar">
           {{ v_date ? formatDate(v_date) : 'Дата проведения' }}
           <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>

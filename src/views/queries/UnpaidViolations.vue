@@ -18,9 +18,9 @@ const { violations, isLoading, error } = storeToRefs(violationStore)
 const allViolations = ref<Violation[]>([])
 
 const isCalendarOpen = ref(false)
-const container5Ref = ref<HTMLElement | null>(null)
 const toggleCalendar = () => {
   isCalendarOpen.value = !isCalendarOpen.value
+  console.log(isCalendarOpen.value)
 }
 const handleDateSelect = (date: Date | null) => {
   if (date) {
@@ -28,11 +28,11 @@ const handleDateSelect = (date: Date | null) => {
   }
 }
 const handleClickOutside = (event: MouseEvent) => {
-  if (container5Ref.value && !container5Ref.value.contains(event.target as Node)) {
+  const calendarElement = document.getElementById('calendar-cont')
+  if (calendarElement && !calendarElement.contains(event.target as Node)) {
     isCalendarOpen.value = false
   }
 }
-
 const filterByDate = ref<Date | null>(null)
 const typeFiltering = ref<'До' | 'После' | 'Конкретная' | null>(null)
 const filterByShipNumber = ref<string | null>(null)
@@ -115,12 +115,13 @@ onUnmounted(() => {
       </div>
     </div>
     <div
+      v-if="typeFiltering"
       class="filter-item date"
       :style="{ position: 'relative' }"
-      :class="{ disabled: !typeFiltering }"
+      id="calendar-cont"
     >
       <p>Дата нарушений *</p>
-      <button @click="toggleCalendar" ref="container5Ref" :class="{ active: filterByDate }">
+      <button @click="toggleCalendar" :class="{ active: filterByDate }">
         {{ filterByDate ? formatDate(filterByDate) : 'Укажите дату' }}
         <img src="/icons/calendar.svg" alt="calendar" width="16px" />
       </button>
@@ -155,12 +156,8 @@ onUnmounted(() => {
     <div class="title">
       <div class="text">
         <h1>Запрос «Неоплаченные штрафы»</h1>
-        <p>
-          Вывод информации о неоплаченных нарушениях{{
-            typeFiltering && filterByDate ? ` (${typeFiltering} ${formatDate(filterByDate!)})` : ''
-          }}
-          <span @click="isFilterWindowOpen = true">Изменить</span>
-        </p>
+        <p>Вывод информации о неоплаченных нарушениях</p>
+        <p v-if="typeFiltering || filterByDate || filterByShipNumber">Параметры: {{typeFiltering}}, {{formatDate(filterByDate!)}}, {{filterByShipNumber}} <span @click="isFilterWindowOpen = true">Изменить</span></p>
         <p>Найдено записей: {{ allViolations.length }}</p>
         <p>Общая сумма: {{ allViolations.reduce((a, c) => a + parseInt(c.amount), 0) }}</p>
       </div>

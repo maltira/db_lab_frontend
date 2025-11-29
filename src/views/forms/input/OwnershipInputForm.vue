@@ -74,7 +74,6 @@ const handleShipUpdate = (id: string, number: string) => {
 }
 
 const isCalendarOpen = ref(false)
-const container3Ref = ref<HTMLElement | null>(null)
 const toggleCalendar = () => {
   isCalendarOpen.value = !isCalendarOpen.value
 }
@@ -84,7 +83,8 @@ const handleDateSelect = (date: Date | null) => {
   }
 }
 const handleClickOutside = (event: MouseEvent) => {
-  if (container3Ref.value && !container3Ref.value.contains(event.target as Node)) {
+  const calendarElement = document.getElementById('container3Ref')
+  if (calendarElement && !calendarElement.contains(event.target as Node)) {
     isCalendarOpen.value = false
   }
 }
@@ -202,9 +202,9 @@ onUnmounted(() => {
           {{ newOwnerSurname ? newOwnerSurname : 'Новый владелец' }}
         </button>
       </div>
-      <div class="item" :style="{ position: 'relative' }">
+      <div class="item" :style="{ position: 'relative' }" id="container3Ref">
         <p>Дата передачи:</p>
-        <button @click="toggleCalendar" ref="container3Ref">
+        <button @click="toggleCalendar">
           {{ transferDate ? formatDate(transferDate) : 'Дата передачи' }}
           <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>

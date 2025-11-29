@@ -74,7 +74,6 @@ const handleResultUpdate = (r: | 'Годно к эксплутации' | 'Го�
 }
 
 const isCalendarOpen = ref(false)
-const container1Ref = ref<HTMLElement | null>(null)
 const toggleCalendar = () => {
   isCalendarOpen.value = !isCalendarOpen.value
 }
@@ -87,7 +86,8 @@ const handleDateSelect = (date: Date | null) => {
   }
 }
 const handleClickOutside = (event: MouseEvent) => {
-  if (container1Ref.value && !container1Ref.value.contains(event.target as Node)) {
+  const calendarElement = document.getElementById('container1Ref')
+  if (calendarElement && !calendarElement.contains(event.target as Node)) {
     isCalendarOpen.value = false
   }
 }
@@ -216,9 +216,9 @@ onUnmounted(() => {
           {{ shipNumber ? shipNumber : 'Судно' }}
         </button>
       </div>
-      <div class="item" :style="{ position: 'relative' }">
+      <div class="item" :style="{ position: 'relative' }" id="container1Ref">
         <p>Дата проведения:</p>
-        <button @click="toggleCalendar" ref="container1Ref">
+        <button @click="toggleCalendar">
           {{ ins_date ? formatDate(ins_date) : 'Дата проведения' }}
           <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>

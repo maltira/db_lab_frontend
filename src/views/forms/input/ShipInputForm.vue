@@ -80,7 +80,6 @@ const handleStatusUpdate = (status: 'Активный' | 'Истёкший') => 
 }
 
 const isCalendarOpen = ref(false)
-const container2Ref = ref<HTMLElement | null>(null)
 const toggleCalendar = () => {
   isCalendarOpen.value = !isCalendarOpen.value
 }
@@ -90,7 +89,8 @@ const handleDateSelect = (date: Date | null) => {
   }
 }
 const handleClickOutside = (event: MouseEvent) => {
-  if (container2Ref.value && !container2Ref.value.contains(event.target as Node)) {
+  const calendarElement = document.getElementById('container2Ref')
+  if (calendarElement && !calendarElement.contains(event.target as Node)) {
     isCalendarOpen.value = false
   }
 }
@@ -237,9 +237,9 @@ onUnmounted(() => {
         <p>Номер судна:</p>
         <input type="text" v-model="ship_number" placeholder="Номер судна" />
       </div>
-      <div class="item" :style="{ position: 'relative' }">
+      <div class="item" :style="{ position: 'relative' }" id="container2Ref">
         <p>Дата регистрации:</p>
-        <button @click="toggleCalendar" ref="container2Ref">
+        <button @click="toggleCalendar">
           {{ reg_date ? formatDate(reg_date) : 'Дата регистрации' }}
           <img src="/icons/calendar.svg" alt="calendar" width="16px" />
         </button>
