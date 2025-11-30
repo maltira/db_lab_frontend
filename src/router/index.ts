@@ -27,6 +27,7 @@ import UnpaidViolations from '@/views/queries/UnpaidViolations.vue'
 import OverdueInspections from '@/views/queries/OverdueInspections.vue'
 import SoonInspections from '@/views/queries/SoonInspections.vue'
 import StatsViolations from '@/views/queries/StatsViolations.vue'
+import StatsInspectors from '@/views/queries/StatsInspectors.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -92,6 +93,14 @@ const routes: RouteRecordRaw[] = [
     component: UnpaidViolations,
     meta: {
       page_id: 4
+    }
+  },
+  {
+    path: '/query/get_statistic_inspectors',
+    name: 'StatsInspectorsQuery',
+    component: StatsInspectors,
+    meta: {
+      page_id: 5
     }
   },
   {
