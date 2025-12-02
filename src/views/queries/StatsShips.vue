@@ -6,8 +6,6 @@ import { formatDate } from '@/utils/date_format.ts'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { useViolationStore } from '@/stores/violation.store.ts'
-import type { Violation } from '@/types/violation.ts'
 import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -19,6 +17,8 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+import { useShipStore } from '@/stores/ship.store.ts'
+import type { Ship } from '@/types/ship.ts'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -67,62 +67,75 @@ const route = useRoute()
 const sidebarStore = useSidebarStore()
 const { selectedRoute } = storeToRefs(sidebarStore)
 
-const violationStore = useViolationStore()
-const { fetchViolations } = violationStore
-const { violations, isLoading, error } = storeToRefs(violationStore)
-const allViolations = ref<Violation[]>([])
+const shipStore = useShipStore()
+const { fetchShips } = shipStore
+const { ships, isLoading, error } = storeToRefs(shipStore)
+const allShips = ref<Ship[]>([])
 
 const filterByYear = ref<number | null>(null)
 const filterByMonth = ref<number | null>(null)
 const filterByDay = ref<number | null>(null)
-const filterByShipNumber = ref('')
+const filterByType = ref('')
+const filterByOwner = ref('')
+const filterBySkipper = ref('')
 const isFilterWindowOpen = ref(true)
 
 const formatingDate = (date: Date) => new Date(date)
 
-const reloadViolations = async () => {
+const reloadInspections = async () => {
   dailyCounts.fill(0)
   monthlyCounts.fill(0)
   isFilterWindowOpen.value = false
-  await fetchViolations()
-  allViolations.value = violations.value
+  await fetchShips()
+  allShips.value = ships.value
 
   if (filterByYear.value) {
-    allViolations.value = allViolations.value.filter(
-      (s) => formatingDate(s.violation_date).getFullYear() == filterByYear.value,
+    allShips.value = allShips.value.filter(
+      (s) => formatingDate(s.registration_date).getFullYear() == filterByYear.value,
     )
   }
   if (filterByMonth.value) {
-    allViolations.value = allViolations.value.filter(
-      (s) => formatingDate(s.violation_date).getMonth() + 1 == filterByMonth.value,
+    allShips.value = allShips.value.filter(
+      (s) => formatingDate(s.registration_date).getMonth() + 1 == filterByMonth.value,
     )
   }
   if (filterByDay.value) {
-    allViolations.value = allViolations.value.filter(
-      (s) => formatingDate(s.violation_date).getDate() == filterByDay.value,
+    allShips.value = allShips.value.filter(
+      (s) => formatingDate(s.registration_date).getDate() == filterByDay.value,
     )
   }
-  if (filterByShipNumber.value) {
-    allViolations.value = allViolations.value.filter(
-      (s) => s.Ship!.ship_number === filterByShipNumber.value,
+  if (filterByType.value) {
+    allShips.value = allShips.value.filter(
+      (s) => s.Type!.name === filterByType.value,
     )
   }
+  if (filterByOwner.value) {
+    allShips.value = allShips.value.filter(
+      (s) => s.Owner!.surname === filterByOwner.value,
+    )
+  }
+  if (filterBySkipper.value) {
+    allShips.value = allShips.value.filter(
+      (s) => s.Skipper!.surname === filterBySkipper.value,
+    )
+  }
+
   if (filterByYear.value) {
-    for (let s of allViolations.value) {
-      monthlyCounts[formatingDate(s.violation_date).getMonth()]++
-      dailyCounts[formatingDate(s.violation_date).getDate() - 1]++
+    for (let s of allShips.value) {
+      monthlyCounts[formatingDate(s.registration_date).getMonth()]++
+      dailyCounts[formatingDate(s.registration_date).getDate() - 1]++
     }
     dataByYear.datasets[0]!.data = monthlyCounts
     dataByYear.datasets[0]!.label = `Статистика за ${filterByYear.value} год`
     dataByMonth.datasets[0]!.data = dailyCounts
   }
   else {
-    const temp = allViolations.value.filter(
-      (s) => formatingDate(s.violation_date).getFullYear() == 2025,
+    const temp = allShips.value.filter(
+      (s) => formatingDate(s.registration_date).getFullYear() == 2025,
     )
     for (let s of temp) {
-      monthlyCounts[formatingDate(s.violation_date).getMonth()]++
-      dailyCounts[formatingDate(s.violation_date).getDate() - 1]++
+      monthlyCounts[formatingDate(s.registration_date).getMonth()]++
+      dailyCounts[formatingDate(s.registration_date).getDate() - 1]++
     }
     dataByYear.datasets[0]!.data = monthlyCounts
     dataByYear.datasets[0]!.label = 'Статистика за 2025 год'
@@ -132,11 +145,11 @@ const reloadViolations = async () => {
 const goToShip = async (id: string) => {
   await router.push(`/form/input/ship/${id}`)
 }
-const goToViolation = async (id: string) => {
-  await router.push(`/form/input/violation/${id}`)
+const goToSkipper = async (id: string) => {
+  await router.push(`/form/input/skipper/${id}`)
 }
-const goToInspector = async (id: string) => {
-  await router.push(`/form/input/inspector/${id}`)
+const goToOwner = async (id: string) => {
+  await router.push(`/form/input/owner/${id}`)
 }
 onMounted(() => {
   if (typeof route.meta.page_id === 'number')
@@ -159,71 +172,76 @@ onMounted(() => {
       <input type="text" v-model="filterByDay" placeholder="Например, 31" :class="{active: filterByDay}"/>
     </div>
     <div class="filter-item">
-      <p>Номер судна (необяз.)</p>
-      <input type="text" v-model="filterByShipNumber" placeholder="А21ВО21" :class="{active: filterByShipNumber}"/>
+      <p>Тип судна (необяз.)</p>
+      <input type="text" v-model="filterByType" placeholder="Яхты и катера" :class="{active: filterByType}"/>
     </div>
-    <button class="continue" @click="reloadViolations">
-      {{filterByYear || filterByMonth || filterByDay || filterByShipNumber ? 'Продолжить' : 'Продолжить без параметров'}}
+    <div class="filter-item">
+      <p>Владелец (необяз.)</p>
+      <input type="text" v-model="filterByOwner" placeholder="Казаченко" :class="{active: filterByOwner}"/>
+    </div>
+    <div class="filter-item">
+      <p>Судоводитель (необяз.)</p>
+      <input type="text" v-model="filterBySkipper" placeholder="Петров" :class="{active: filterBySkipper}"/>
+    </div>
+    <button class="continue" @click="reloadInspections">
+      {{filterByYear || filterByMonth || filterByDay || filterBySkipper || filterByOwner || filterByType ? 'Продолжить' : 'Продолжить без параметров'}}
     </button>
   </div>
   <div class="input-view" v-else>
     <div class="title">
       <div class="text">
-        <h1>Запрос «Статистика по штрафам»</h1>
-        <p>Вывод информации о штрафах</p>
+        <h1>Запрос «Статистика по суднам»</h1>
+        <p>Вывод информации о суднах</p>
         <p>
           Параметры: {{ filterByYear }}, {{ filterByMonth }}, {{ filterByDay }},
-          {{ filterByShipNumber }} <span @click="isFilterWindowOpen = true">Изменить</span>
+          {{ filterByType }}, {{filterByOwner}}, {{filterBySkipper}} <span @click="isFilterWindowOpen = true">Изменить</span>
         </p>
-        <p>Найдено записей: {{ allViolations.length }}</p>
-        <p>Общая сумма: {{ allViolations.reduce((a, c) => a + parseInt(c.amount), 0) }}</p>
+        <p>Найдено записей: {{ allShips.length }}</p>
       </div>
     </div>
     <Skeleton v-if="isLoading && !error" height="300px" />
     <p v-if="error" class="mes-p">Произошла ошибка: {{ error }}</p>
-    <div v-if="!isLoading && !error && allViolations.length > 0" style="width: 100%">
+    <div v-if="!isLoading && !error && allShips.length > 0" style="width: 100%">
       <div
-        v-if="filterByYear || (!filterByYear && !filterByMonth && !filterByDay)"
+        v-if="filterByYear || (!filterByYear && !filterByMonth && !filterByDay && !filterByType && !filterByOwner && !filterBySkipper)"
         :style="{ display: 'flex', justifyContent: 'center', height: '400px' }"
       >
         <Line :data="filterByMonth ? dataByMonth : dataByYear" :options="options" />
       </div>
       <table>
         <thead>
-          <tr>
-            <td>Номер судна</td>
-            <td>Инспектор</td>
-            <td>Дата нарушения</td>
-            <td>Сумма штрафа</td>
-            <td>Описание нарушения</td>
-            <td>Статус</td>
-          </tr>
+        <tr>
+          <td>Тип</td>
+          <td>Владелец</td>
+          <td>Судоводитель</td>
+          <td>Номер судна</td>
+          <td>Дата регистрации</td>
+          <td>Статус регистрации</td>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="(v, i) in allViolations" :key="i" @click="goToViolation(v.id)">
-            <td class="active-td" @click.stop @click="goToShip(v.Ship!.id)">
-              {{ v.Ship!.ship_number }}
-            </td>
-            <td class="active-td" @click.stop @click="goToInspector(v.Inspector!.id)">
-              {{ v.Inspector!.surname }}
-            </td>
-            <td>{{ formatDate(v.violation_date) }}</td>
-            <td>{{ v.amount }}</td>
-            <td>{{ v.description }}</td>
-            <td
-              :style="{
-                color: v.status ? (v.status === 'Не исполнено' ? 'red' : 'rgb(112, 224, 0)') : '',
-              }"
-            >
-              {{ v.status }}
-            </td>
-          </tr>
+        <tr v-for="(v, i) in allShips" :key="i" @click="goToShip(v.id)">
+          <td>
+            {{ v.Type!.name }}
+          </td>
+          <td class="active-td" @click.stop @click="goToOwner(v.Owner!.id)">
+            {{ v.Owner!.surname }}
+          </td>
+          <td class="active-td" @click.stop @click="goToSkipper(v.Skipper!.id)">
+            {{ v.Skipper!.surname }}
+          </td>
+          <td>
+            {{ v.ship_number }}
+          </td>
+          <td>{{ formatDate(v.registration_date) }}</td>
+          <td>{{ v.registration_status }}</td>
+        </tr>
         </tbody>
       </table>
     </div>
     <p v-else-if="!isLoading && !error" class="mes-p">Ничего не найдено</p>
     <div class="actions">
-      <button @click="reloadViolations">
+      <button @click="reloadInspections">
         <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
       </button>

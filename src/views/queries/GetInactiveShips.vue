@@ -60,7 +60,7 @@ onMounted(async () => {
       class="continue"
       @click="reloadShips"
     >
-      Продолжить
+      {{filterByType || filterByOwner ? 'Продолжить' : 'Продолжить без параметров'}}
     </button>
   </div>
   <div class="input-view" v-else>

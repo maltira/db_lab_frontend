@@ -141,7 +141,9 @@ onMounted(() => {
         <option>Нарушения</option>
       </select>
     </div>
-    <button class="continue" @click="reloadInspectors" :class="{disabled: !filterByType}">Продолжить</button>
+    <button class="continue" @click="reloadInspectors" :class="{disabled: !filterByType}">
+      {{filterByYear || filterByMonth ? 'Продолжить' : 'Продолжить без параметров'}}
+    </button>
   </div>
   <div class="input-view" v-else>
     <div class="title">

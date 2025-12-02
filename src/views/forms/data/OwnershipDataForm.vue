@@ -68,6 +68,7 @@ onMounted(async () => {
   if (props.ship_id) {
     filteredOwnerships.value = ownerships.value.filter((v) => v.Ship!.id === props.ship_id)
   }
+  console.log(ownerships.value)
 })
 </script>
 

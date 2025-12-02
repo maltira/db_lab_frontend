@@ -28,6 +28,8 @@ import OverdueInspections from '@/views/queries/OverdueInspections.vue'
 import SoonInspections from '@/views/queries/SoonInspections.vue'
 import StatsViolations from '@/views/queries/StatsViolations.vue'
 import StatsInspectors from '@/views/queries/StatsInspectors.vue'
+import StatsInspections from '@/views/queries/StatsInspections.vue'
+import StatsShips from '@/views/queries/StatsShips.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -80,6 +82,14 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/query/get_statistic_ships',
+    name: 'StatsShipsQuery',
+    component: StatsShips,
+    meta: {
+      page_id: 2
+    }
+  },
+  {
     path: '/query/get_statistic_violations',
     name: 'StatsViolationsQuery',
     component: StatsViolations,
@@ -101,6 +111,14 @@ const routes: RouteRecordRaw[] = [
     component: StatsInspectors,
     meta: {
       page_id: 5
+    }
+  },
+  {
+    path: '/query/get_statistic_inspections',
+    name: 'StatsInspectionsQuery',
+    component: StatsInspections,
+    meta: {
+      page_id: 6
     }
   },
   {

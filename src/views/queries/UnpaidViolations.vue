@@ -142,14 +142,14 @@ onUnmounted(() => {
     </div>
     <div class="filter-item ship-number">
       <p>Номер судна</p>
-      <input type="text" v-model="filterByShipNumber" placeholder="Номер судна (необязательно)">
+      <input type="text" v-model="filterByShipNumber" placeholder="Номер судна (необязательно)" :class="{active: filterByShipNumber}">
     </div>
     <button
       class="continue"
       @click="reloadViolations"
       :class="{ disabled: typeFiltering && !filterByDate }"
     >
-      Продолжить
+      {{typeFiltering || filterByDate ? 'Продолжить' : 'Продолжить без параметров'}}
     </button>
   </div>
   <div class="input-view" v-else>
