@@ -30,6 +30,7 @@ import StatsViolations from '@/views/queries/StatsViolations.vue'
 import StatsInspectors from '@/views/queries/StatsInspectors.vue'
 import StatsInspections from '@/views/queries/StatsInspections.vue'
 import StatsShips from '@/views/queries/StatsShips.vue'
+import AllQueriesForm from '@/views/forms/data/AllQueriesForm.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -288,6 +289,14 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       page_id: 13
+    }
+  },
+  {
+    path: '/form/data/queries',
+    name: 'QueriesDataForm',
+    component: AllQueriesForm,
+    meta: {
+      page_id: 14
     }
   },
 ]

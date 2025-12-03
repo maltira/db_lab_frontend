@@ -49,6 +49,12 @@ const allOwnerships = computed(() => {
 
 const reloadOwnerships = async () => {
   await fetchOwnerships()
+
+  if (props.ship_id) {
+    filteredOwnerships.value = ownerships.value.filter((v) => v.Ship!.id === props.ship_id)
+  } else {
+    filteredOwnerships.value = ownerships.value
+  }
 }
 
 const goToOwnership = async (id: string) => {
@@ -67,8 +73,9 @@ onMounted(async () => {
 
   if (props.ship_id) {
     filteredOwnerships.value = ownerships.value.filter((v) => v.Ship!.id === props.ship_id)
+  } else {
+    filteredOwnerships.value = ownerships.value
   }
-  console.log(ownerships.value)
 })
 </script>
 
