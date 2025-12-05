@@ -35,7 +35,7 @@ export const useQueryStore = defineStore('query', {
       }
     },
 
-    async Update(req: Query): Promise<void> {
+    async update(req: Query): Promise<void> {
       try {
         this.isLoading = true
         this.error = null

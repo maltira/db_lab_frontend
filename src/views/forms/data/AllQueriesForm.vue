@@ -1,16 +1,80 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { onMounted } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import router from '@/router'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { useRoute } from 'vue-router'
-const route = useRoute()
-const sidebarStore = useSidebarStore()
-const { allQueries, selectedRoute } = storeToRefs(sidebarStore)
+import { useQueryStore } from '@/stores/query.store.ts'
+import Skeleton from '@/components/ui/Skeleton.vue'
+import type { Query } from '@/types/query.ts'
+import { useNotification } from '@/composables/useNotification.ts'
 
+const route = useRoute()
+
+const { err, success } = useNotification()
+
+const queryStore = useQueryStore()
+const { queries, isLoading, error } = storeToRefs(queryStore)
+const { fetchQueries, update } = queryStore
+
+const sidebarStore = useSidebarStore()
+const { selectedRoute } = storeToRefs(sidebarStore)
+
+const allAccess = ref<Array<boolean | null>>([])
+const modifiedElements = ref<Array<Query | null>>([])
+const isUpdateAvailable = ref<boolean>(false)
+
+watch(allAccess.value, (newValue) => {
+  console.log('newValue', newValue)
+  newValue.forEach((query, i) => {
+    if (queries.value[i] && queries.value[i].access !== query) {
+      modifiedElements.value[i] = {
+        id: queries.value[i].id,
+        name: queries.value[i].name,
+        route: queries.value[i].route,
+        access: query!,
+      }
+    } else if (queries.value[i] && queries.value[i].access === query) {
+      modifiedElements.value[i] = null
+    }
+  })
+  console.log('modifiedElements', modifiedElements.value)
+  isUpdateAvailable.value = modifiedElements.value.filter((el) => el).length > 0
+})
+
+const UpdateQueries = async () => {
+  console.log(modifiedElements.value)
+  for (let el of modifiedElements.value) {
+    if (el) await update(el)
+
+    if (el && error.value) {
+      err('Не удалось обновить запрос', `${el.name}. ${error.value}`)
+    }
+  }
+  modifiedElements.value.forEach((el, i) => {
+    modifiedElements.value[i] = null
+    allAccess.value[i] = null
+  })
+  await reloadElements()
+
+  success('Выбранные запрос обновлены', 'Вы успешно обновили выбранные запросы')
+}
+
+const reloadElements = async () => {
+  await fetchQueries()
+  queries.value.forEach((query, i) => {
+    allAccess.value[i] = query.access
+  })
+}
 onMounted(async () => {
   if (typeof route.meta.page_id === 'number')
     selectedRoute.value = { block: 'forms', id: route.meta.page_id, access: false }
+
+  await fetchQueries()
+  queries.value.forEach((query, i) => {
+    allAccess.value[i] = query.access
+  })
+  console.log('allAccess onMounted', allAccess.value)
 })
 </script>
 
@@ -24,30 +88,35 @@ onMounted(async () => {
       </div>
     </div>
     <div class="container-table">
-      <p v-if="allQueries.length > 0" class="mes-p">Количество записей: {{allQueries.length}}</p>
-      <table v-if="allQueries.length > 0">
+      <Skeleton height="20px" width="200px" v-if="isLoading && !error" />
+      <Skeleton height="300px" v-if="isLoading && !error" />
+
+      <p v-if="!isLoading && !error && queries.length > 0" class="mes-p">
+        Количество записей: {{ queries.length }}
+      </p>
+      <table v-if="!isLoading && !error && queries.length > 0">
         <thead>
-        <tr>
-          <td>Название запроса</td>
-          <td class="parent-input">Доступ</td>
-          <td></td>
-        </tr>
+          <tr>
+            <td>Название запроса</td>
+            <td class="parent-input">Доступ</td>
+            <td></td>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="(q, i) in allQueries" :key="i">
-          <td>{{ q.name }}</td>
-          <td class="parent-input">
-            <input type="checkbox" v-model="q.access" class="input-checkbox">
-          </td>
-          <td class="list-button" @click="router.push(`${q.route}`)">Выполнить</td>
-        </tr>
+          <tr v-for="(q, i) in queries" :key="i">
+            <td>{{ q.name }}</td>
+            <td class="parent-input">
+              <input type="checkbox" v-model="allAccess[i]" class="input-checkbox" />
+            </td>
+            <td class="list-button" @click="router.push(`${q.route}`)">Выполнить</td>
+          </tr>
         </tbody>
       </table>
       <p v-else class="mes-p">Ничего не найдено</p>
     </div>
     <div class="actions">
-      <button @click="">
-        <img src="/icons/reload.svg" alt="reload" />
+      <button v-if="isUpdateAvailable" @click="UpdateQueries">
+        <img src="/icons/research.png" alt="save" />
         Сохранить изменения
       </button>
     </div>
@@ -93,20 +162,20 @@ td {
 
   border-bottom: 1px solid rgba(gray, 0.15);
 
-  &.list-button{
+  &.list-button {
     background-color: rgba(gray, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
 
-    &:hover{
+    &:hover {
       cursor: pointer;
       background-color: rgba(gray, 0.2);
     }
   }
 
-  &.parent-input{
+  &.parent-input {
     text-align: center;
     & > .input-checkbox {
       text-align: center;
@@ -114,9 +183,8 @@ td {
       height: 20px;
     }
   }
-
 }
-.container-table{
+.container-table {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -140,7 +208,7 @@ table {
         &.address {
           max-width: 250px;
         }
-        &.active-td:hover{
+        &.active-td:hover {
           background-color: rgba(gray, 0.08);
         }
       }
@@ -181,7 +249,7 @@ table {
     }
   }
 }
-.filter-block{
+.filter-block {
   display: flex;
   align-items: start;
   flex-direction: column;
@@ -191,12 +259,12 @@ table {
     font-size: 16px;
     opacity: 0.7;
 
-    &:hover{
+    &:hover {
       opacity: 9;
     }
   }
 }
-.mes-p{
+.mes-p {
   font-size: 16px;
   opacity: 0.9;
 }
