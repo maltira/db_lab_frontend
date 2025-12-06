@@ -1,3 +1,4 @@
+import type { User } from '@/types/user.ts'
 
 export interface OwnerCreateRequest {
   name: string;
@@ -53,4 +54,14 @@ export interface SkipperCreateRequest {
   surname: string;
   patronymic: string;
   id_number: string;
+}
+
+export interface AuthRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User
 }

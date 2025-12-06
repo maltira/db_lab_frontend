@@ -2,9 +2,14 @@
 import { ref } from 'vue'
 import { useSidebarStore } from '@/stores/sidebar.store.ts'
 import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/stores/auth.store.ts'
 
 const sidebarStore = useSidebarStore()
 const { allTables, allForms, allQueries, allReports, selectedRoute } = storeToRefs(sidebarStore)
+
+const authStore = useAuthStore()
+const { user, isAuthenticated, isLoading, error } = storeToRefs(authStore)
+const { logout } = authStore
 
 const isTablesOpen = ref(false)
 const isQueriesOpen = ref(false)
@@ -25,6 +30,11 @@ const toggleReports = () => {
 }
 const selectElement = (block: 'tables' | 'queries' | 'forms' | 'reports', id: number) => {
   selectedRoute.value = { block: block, id: id }
+}
+
+const LogOut = async () => {
+  await logout()
+  window.location.reload()
 }
 </script>
 
@@ -94,6 +104,11 @@ const selectElement = (block: 'tables' | 'queries' | 'forms' | 'reports', id: nu
       </div>
       <p v-else-if="isReportsOpen && allReports.length === 0" class="empty_block">Здесь пусто</p>
     </div>
+    <div class="user_block">
+      <p class="name">{{ user?.name }}</p>
+      <p class="role">{{ user?.is_admin ? "Администратор" : "Сотрудник" }}</p>
+      <button @click="LogOut" class="logout">Выйти</button>
+    </div>
   </div>
 </template>
 
@@ -111,6 +126,44 @@ const selectElement = (block: 'tables' | 'queries' | 'forms' | 'reports', id: nu
 
   overflow-y: scroll;
   scrollbar-width: none;
+}
+.user_block{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  background: rgba(gray, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+
+  & > p {
+    font-size: 16px;
+
+    &.role {
+      opacity: 0.6;
+    }
+  }
+  & > button {
+    font-size: 16px;
+    margin-top: 10px;
+    padding: 10px;
+
+    opacity: 0.8;
+    background: rgba(gray, 0.05);
+    border: 1px solid rgba(gray, 0.2);
+    border-radius: 8px;
+
+    &:hover{
+      border-color: rgba(#ff3e3e, 0.5);
+      background-color: rgba(#ff3e3e, 0.05);
+      color: #ff3e3e;
+    }
+
+    &.disabled{
+      opacity: 0.2;
+      pointer-events: none;
+    }
+  }
 }
 .sidebar_block {
   display: flex;

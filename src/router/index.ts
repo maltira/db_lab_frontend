@@ -31,8 +31,17 @@ import StatsInspectors from '@/views/queries/StatsInspectors.vue'
 import StatsInspections from '@/views/queries/StatsInspections.vue'
 import StatsShips from '@/views/queries/StatsShips.vue'
 import AllQueriesForm from '@/views/forms/data/AllQueriesForm.vue'
+import AuthView from '@/views/AuthView.vue'
 
 const routes: RouteRecordRaw[] = [
+  {
+    path: '/auth',
+    name: 'AuthView',
+    component: AuthView,
+    meta: {
+      hideSidebar: true
+    }
+  },
   {
     path: '/table/owner',
     name: 'OwnerView',

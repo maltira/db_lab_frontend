@@ -1,28 +1,35 @@
 <script setup lang="ts">
-
 import AppSidebar from '@/components/layout/AppSidebar.vue'
-import { onMounted } from 'vue'
-import router from '@/router'
+import { computed, onMounted } from 'vue'
 import Notification from '@/components/ui/Notification.vue'
+import { useAppInit } from '@/composables/useAppInit.ts'
+import { useRoute } from 'vue-router'
 
-onMounted(async() => {
-  await router.push('/')
+const { isAppReady, initApp } = useAppInit()
+const route = useRoute()
+
+const hideSidebar = computed(() => {
+  return route.meta.hideSidebar && route.meta.hideSidebar === true
+})
+
+onMounted(async () => {
+  await initApp()
 })
 </script>
 
 <template>
-  <AppSidebar/>
-  <div id="content">
-    <RouterView/>
+  <AppSidebar v-if="!hideSidebar" />
+  <div id="content" v-if="isAppReady">
+    <RouterView />
   </div>
-  <Notification/>
+  <Notification />
 </template>
 
 <style lang="scss">
-#app{
+#app {
   display: flex;
 }
-#content{
+#content {
   padding: 30px;
   width: 100%;
 }
