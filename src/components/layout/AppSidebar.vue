@@ -8,7 +8,7 @@ const sidebarStore = useSidebarStore()
 const { allTables, allForms, allQueries, allReports, selectedRoute } = storeToRefs(sidebarStore)
 
 const authStore = useAuthStore()
-const { user, isAuthenticated, isLoading, error } = storeToRefs(authStore)
+const { user } = storeToRefs(authStore)
 const { logout } = authStore
 
 const isTablesOpen = ref(false)
@@ -50,7 +50,14 @@ const LogOut = async () => {
         />
       </div>
       <div class="block_items" v-if="isTablesOpen && allTables.length > 0">
-        <RouterLink :to="table.route" class="item" v-for="table in allTables" :key="table.id" @click="selectElement('tables', table.id)" :class="{active: selectedRoute.block === 'tables' && selectedRoute.id === table.id}">
+        <RouterLink
+          :to="table.route"
+          class="item"
+          v-for="table in allTables"
+          :key="table.id"
+          @click="selectElement('tables', table.id)"
+          :class="{ active: selectedRoute.block === 'tables' && selectedRoute.id === table.id }"
+        >
           <p>{{ table.name }}</p>
         </RouterLink>
       </div>
@@ -66,7 +73,15 @@ const LogOut = async () => {
         />
       </div>
       <div class="block_items" v-if="isQueriesOpen && allQueries.length > 0">
-        <RouterLink :to="query.route" class="item" v-for="query in allQueries" :key="query.id" @click="selectElement('queries', query.id)" :class="{active: selectedRoute.block === 'queries' && selectedRoute.id === query.id}">
+        <RouterLink
+          v-for="query in allQueries"
+          :key="query.id"
+          :to="query.route"
+          :class="{ active: selectedRoute.block === 'queries' && selectedRoute.id === query.id }"
+          class="item"
+          @click="selectElement('queries', query.id)"
+          :style="{display: user?.is_admin ? 'block' : (query.access ? 'block' : 'none')}"
+        >
           <p>{{ query.name }}</p>
         </RouterLink>
       </div>
@@ -82,7 +97,15 @@ const LogOut = async () => {
         />
       </div>
       <div class="block_items" v-if="isFormsOpen && allForms.length > 0">
-        <RouterLink :to="form.route" class="item" v-for="form in allForms" :key="form.id" @click="selectElement('forms', form.id)" :class="{active: selectedRoute.block === 'forms' && selectedRoute.id === form.id}">
+        <RouterLink
+          :to="form.route"
+          class="item"
+          v-for="form in allForms"
+          :key="form.id"
+          @click="selectElement('forms', form.id)"
+          :class="{ active: selectedRoute.block === 'forms' && selectedRoute.id === form.id }"
+          :style="{display: user?.is_admin ? 'block' : (form.access ? 'block' : 'none')}"
+        >
           <p>{{ form.name }}</p>
         </RouterLink>
       </div>
@@ -98,7 +121,14 @@ const LogOut = async () => {
         />
       </div>
       <div class="block_items" v-if="isReportsOpen && allReports.length > 0">
-        <RouterLink :to="r.route" class="item" v-for="r in allReports" :key="r.id" @click="selectElement('reports', r.id)" :class="{active: selectedRoute.block === 'reports' && selectedRoute.id === r.id}">
+        <RouterLink
+          :to="r.route"
+          class="item"
+          v-for="r in allReports"
+          :key="r.id"
+          @click="selectElement('reports', r.id)"
+          :class="{ active: selectedRoute.block === 'reports' && selectedRoute.id === r.id }"
+        >
           <p>{{ r.name }}</p>
         </RouterLink>
       </div>
@@ -106,7 +136,7 @@ const LogOut = async () => {
     </div>
     <div class="user_block">
       <p class="name">{{ user?.name }}</p>
-      <p class="role">{{ user?.is_admin ? "Администратор" : "Сотрудник" }}</p>
+      <p class="role">{{ user?.is_admin ? 'Администратор' : 'Сотрудник' }}</p>
       <button @click="LogOut" class="logout">Выйти</button>
     </div>
   </div>
@@ -127,7 +157,7 @@ const LogOut = async () => {
   overflow-y: scroll;
   scrollbar-width: none;
 }
-.user_block{
+.user_block {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -153,13 +183,13 @@ const LogOut = async () => {
     border: 1px solid rgba(gray, 0.2);
     border-radius: 8px;
 
-    &:hover{
+    &:hover {
       border-color: rgba(#ff3e3e, 0.5);
       background-color: rgba(#ff3e3e, 0.05);
       color: #ff3e3e;
     }
 
-    &.disabled{
+    &.disabled {
       opacity: 0.2;
       pointer-events: none;
     }
@@ -197,7 +227,7 @@ const LogOut = async () => {
       cursor: pointer;
       opacity: 0.7;
 
-      &.active{
+      &.active {
         border-left: 4px solid #ccff6c;
         opacity: 0.99;
         pointer-events: none !important;

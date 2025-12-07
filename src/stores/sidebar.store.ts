@@ -6,11 +6,13 @@ interface SidebarElement {
   route: string,
   access: boolean
 }
+
 interface SelectedRoute {
   id: number,
   block: 'forms' | 'tables' | 'queries' | 'reports',
   access?: boolean
 }
+
 export const useSidebarStore = defineStore('sidebar', {
   state: () => ({
     allTables: [
@@ -23,16 +25,7 @@ export const useSidebarStore = defineStore('sidebar', {
       { id: 7, route: "/table/violation", name: "Нарушения", access: true },
       { id: 8, route: "/table/inspection", name: "ТО", access: true },
     ] as SidebarElement[],
-    allQueries: [
-      { id: 1, route: "/query/get_inactive_ships", name: "Истёкшая регистрация судов", access: true  },
-      { id: 2, route: "/query/get_statistic_ships", name: "Статистика по суднам", access: true  },
-      { id: 3, route: "/query/get_statistic_violations", name: "Статистика по штрафам", access: false  },
-      { id: 4, route: "/query/get_unpaid_violations", name: "Неоплаченные штрафы", access: true  },
-      { id: 5, route: "/query/get_statistic_inspectors", name: "Статистика по инспекторам", access: true  },
-      { id: 6, route: "/query/get_statistic_inspections", name: "Статистика по техосмотрам", access: true  },
-      { id: 7, route: "/query/get_soon_inspections", name: "Предстоящие техосмотры", access: true  },
-      { id: 8, route: "/query/get_overdue_inspections", name: "Просроченные техосмотры", access: true },
-    ] as SidebarElement[],
+    allQueries: [] as SidebarElement[],
     allForms: [
       { id: 0, route: "/", name: "Главная форма", access: true },
       { id: 1, route: '/form/input/owner', name: "ФВВ_Владелец", access: true},

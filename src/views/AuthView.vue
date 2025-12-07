@@ -6,8 +6,17 @@ import { ref } from 'vue'
 import type { AuthRequest } from '@/types/dto/request.dto.ts'
 import { useNotification } from '@/composables/useNotification.ts'
 import router from '@/router'
+import { useQueryStore } from '@/stores/query.store.ts'
+import { useSidebarStore } from '@/stores/sidebar.store.ts'
 
 const { err } = useNotification()
+
+const queryStore = useQueryStore()
+const { queries } = storeToRefs(queryStore)
+const { fetchQueries } = queryStore
+
+const sidebarStore = useSidebarStore()
+const { allQueries } = storeToRefs(sidebarStore)
 
 const authStore = useAuthStore()
 const { isLoading, error } = storeToRefs(authStore)
@@ -27,6 +36,11 @@ const loginAccount = async () => {
   if (error.value) {
     err("Ошибка авторизации", error.value)
   } else {
+    await fetchQueries()
+    queries.value.forEach((el, i) => {
+      sidebarStore.allQueries.push({id: i, name: el.name, route: el.route, access: el.access})
+    })
+
     await router.push('/')
   }
 }
