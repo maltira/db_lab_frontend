@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth.store.ts'
 
 const sidebarStore = useSidebarStore()
-const { allTables, allForms, allQueries, allReports, selectedRoute } = storeToRefs(sidebarStore)
+const { allTables, allForms, allQueries, selectedRoute } = storeToRefs(sidebarStore)
 
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
@@ -14,7 +14,6 @@ const { logout } = authStore
 const isTablesOpen = ref(false)
 const isQueriesOpen = ref(false)
 const isFormsOpen = ref(false)
-const isReportsOpen = ref(false)
 
 const toggleTables = () => {
   isTablesOpen.value = !isTablesOpen.value
@@ -24,9 +23,6 @@ const toggleQueries = () => {
 }
 const toggleForms = () => {
   isFormsOpen.value = !isFormsOpen.value
-}
-const toggleReports = () => {
-  isReportsOpen.value = !isReportsOpen.value
 }
 const selectElement = (block: 'tables' | 'queries' | 'forms' | 'reports', id: number) => {
   selectedRoute.value = { block: block, id: id }
