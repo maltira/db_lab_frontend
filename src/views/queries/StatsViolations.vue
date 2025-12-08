@@ -129,6 +129,11 @@ const reloadViolations = async () => {
     dataByMonth.datasets[0]!.data = dailyCounts
   }
 }
+
+const printPage = () => {
+  window.print()
+}
+
 const goToShip = async (id: string) => {
   await router.push(`/form/input/ship/${id}`)
 }
@@ -169,9 +174,9 @@ onMounted(() => {
   <div class="input-view" v-else>
     <div class="title">
       <div class="text">
-        <h1>Запрос «Статистика по штрафам»</h1>
+        <h1>Статистика по штрафам</h1>
         <p>Вывод информации о штрафах</p>
-        <p>
+        <p class="parameters">
           Параметры: {{ filterByYear }}, {{ filterByMonth }}, {{ filterByDay }},
           {{ filterByShipNumber }} <span @click="isFilterWindowOpen = true">Изменить</span>
         </p>
@@ -226,6 +231,10 @@ onMounted(() => {
       <button @click="reloadViolations">
         <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
+      </button>
+      <button @click="printPage">
+        <img src="/icons/printing.png" alt="search"/>
+        Печать
       </button>
     </div>
   </div>

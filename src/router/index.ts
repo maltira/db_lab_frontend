@@ -21,7 +21,6 @@ import OwnershipDataForm from '@/views/forms/data/OwnershipDataForm.vue'
 import SkipperDataForm from '@/views/forms/data/SkipperDataForm.vue'
 import SkipperInputForm from '@/views/forms/input/SkipperInputForm.vue'
 import OwnershipInputForm from '@/views/forms/input/OwnershipInputForm.vue'
-import ReestrShips from '@/views/reports/ReestrShips.vue'
 import GetInactiveShips from '@/views/queries/GetInactiveShips.vue'
 import UnpaidViolations from '@/views/queries/UnpaidViolations.vue'
 import OverdueInspections from '@/views/queries/OverdueInspections.vue'
@@ -122,15 +121,6 @@ const routes: RouteRecordRaw[] = [
     path: '/query/get_overdue_inspections',
     name: 'OverdueInspectionQuery',
     component: OverdueInspections,
-  },
-  // Отчёты
-  {
-    path: '/report/reestr_ships',
-    name: 'ShipReestrReport',
-    component: ReestrShips,
-    meta: {
-      page_id: 1
-    }
   },
   // ФВВ
   {

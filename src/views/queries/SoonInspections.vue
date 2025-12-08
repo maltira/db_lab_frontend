@@ -57,6 +57,10 @@ const getNewDate = (): Date => {
   return date
 }
 
+const printPage = () => {
+  window.print()
+}
+
 onMounted(async () => {
   if (typeof route.meta.page_id === 'number')
     selectedRoute.value = { block: 'queries', id: route.meta.page_id }
@@ -86,7 +90,7 @@ onMounted(async () => {
   <div class="input-view" v-else>
     <div class="title">
       <div class="text">
-        <h1>Запрос «Предстоящие техосмотры»</h1>
+        <h1>Предстоящие техосмотры</h1>
         <p>Вывод информации о предстовящих осмотрах ({{filteringBy}}) <span @click="isFilterWindowOpen = true">Изменить</span></p>
         <p>Найдено записей: {{ allInspections.length }}</p>
       </div>
@@ -137,6 +141,10 @@ onMounted(async () => {
       <button @click="reloadInspections">
         <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
+      </button>
+      <button @click="printPage">
+        <img src="/icons/printing.png" alt="search"/>
+        Печать
       </button>
     </div>
   </div>

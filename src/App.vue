@@ -18,6 +18,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <img id="printing-logotype" src="/img/gims.png" alt="logo" :style="{display: 'none'}"/>
   <AppSidebar v-if="!hideSidebar" />
   <div id="content" v-if="isAppReady">
     <RouterView />
@@ -32,5 +33,23 @@ onMounted(async () => {
 #content {
   padding: 30px;
   width: 100%;
+}
+
+@media print {
+  body {
+    filter: grayscale(100%) !important;
+    -webkit-filter: grayscale(100%) !important;
+  }
+  #sidebar, .actions, .parameters, .vue-devtools__panel {
+    display: none !important;
+  }
+  #printing-logotype{
+    display: block !important;
+    position: absolute !important;
+    top: 30px !important;
+    left: 30px !important;
+    width: 70px !important;
+    height: 70px !important;
+  }
 }
 </style>

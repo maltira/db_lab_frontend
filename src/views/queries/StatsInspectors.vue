@@ -115,6 +115,11 @@ const reloadInspectors = async () => {
     chartData.datasets[0]!.label = `${filterByType.value}. Статистика за ${filterByYear.value} год${filterByMonth.value ? `, ${filterByMonth.value}` : ""}`
   }
 }
+
+const printPage = () => {
+  window.print()
+}
+
 const goToInspector = async (id: string) => {
   await router.push(`/form/input/inspector/${id}`)
 }
@@ -148,9 +153,9 @@ onMounted(() => {
   <div class="input-view" v-else>
     <div class="title">
       <div class="text">
-        <h1>Запрос «Статистика по инспекторам»</h1>
+        <h1>Статистика по инспекторам</h1>
         <p>Вывод информации о выявленных нарушениях и проведенных техосмотрах</p>
-        <p>
+        <p class="parameters">
           Параметры: {{ filterByYear }}, {{ filterByMonth }}, {{ filterByType }} <span @click="isFilterWindowOpen = true">Изменить</span>
         </p>
         <p>Найдено записей: {{ inspectors.length }}</p>
@@ -189,6 +194,10 @@ onMounted(() => {
       <button @click="reloadInspectors">
         <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
+      </button>
+      <button @click="printPage">
+        <img src="/icons/printing.png" alt="search"/>
+        Печать
       </button>
     </div>
   </div>

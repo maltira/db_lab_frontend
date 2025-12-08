@@ -43,6 +43,10 @@ const handleTypeFiltering = (type: 'До' | 'После' | 'Конкретная
   else typeFiltering.value = type
 }
 
+const printPage = () => {
+  window.print()
+}
+
 const reloadViolations = async () => {
   isFilterWindowOpen.value = false
   await fetchViolations()
@@ -155,9 +159,9 @@ onUnmounted(() => {
   <div class="input-view" v-else>
     <div class="title">
       <div class="text">
-        <h1>Запрос «Неоплаченные штрафы»</h1>
+        <h1>Неоплаченные штрафы</h1>
         <p>Вывод информации о неоплаченных нарушениях</p>
-        <p v-if="typeFiltering || filterByDate || filterByShipNumber">Параметры: {{typeFiltering}}, {{formatDate(filterByDate!)}}, {{filterByShipNumber}} <span @click="isFilterWindowOpen = true">Изменить</span></p>
+        <p v-if="typeFiltering || filterByDate || filterByShipNumber" class="parameters">Параметры: {{typeFiltering}}, {{formatDate(filterByDate!)}}, {{filterByShipNumber}} <span @click="isFilterWindowOpen = true">Изменить</span></p>
         <p>Найдено записей: {{ allViolations.length }}</p>
         <p>Общая сумма: {{ allViolations.reduce((a, c) => a + parseInt(c.amount), 0) }}</p>
       </div>
@@ -205,6 +209,10 @@ onUnmounted(() => {
       <button @click="reloadViolations">
         <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
+      </button>
+      <button @click="printPage">
+        <img src="/icons/printing.png" alt="search"/>
+        Печать
       </button>
     </div>
   </div>

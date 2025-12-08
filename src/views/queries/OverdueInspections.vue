@@ -25,6 +25,11 @@ const reloadInspections = async () => {
   }
   allInspections.value = inspections.value.filter(s => getNewDate(s.next_inspection_date) < timeNow)
 }
+
+const printPage = () => {
+  window.print()
+}
+
 const goToShip = async (id: string) => {
   await router.push(`/form/input/ship/${id}`)
 }
@@ -52,7 +57,7 @@ onMounted(async () => {
   <div class="input-view">
     <div class="title">
       <div class="text">
-        <h1>Запрос «Просроченные техосмотры»</h1>
+        <h1>Просроченные техосмотры</h1>
         <p>Вывод информации о просроченных техосмотрах</p>
         <p>Найдено записей: {{allInspections.length}}</p>
       </div>
@@ -100,6 +105,10 @@ onMounted(async () => {
         <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
       </button>
+      <button @click="printPage">
+        <img src="/icons/printing.png" alt="search"/>
+        Печать
+      </button>
     </div>
   </div>
 </template>
@@ -115,7 +124,8 @@ onMounted(async () => {
   & > .title {
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: center;
+    justify-content: center;
     gap: 15px;
 
     & > img {
@@ -124,7 +134,7 @@ onMounted(async () => {
     & > .text {
       & > h1,
       & > p {
-        text-align: start;
+        text-align: center;
       }
       & > p {
         margin-top: 10px;

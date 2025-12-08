@@ -29,6 +29,11 @@ const reloadShips = async () => {
   if (filterByType.value) allShips.value = allShips.value.filter(s => s.Type?.name === filterByType.value)
   if (filterByOwner.value) allShips.value = allShips.value.filter(s => s.Owner?.surname === filterByOwner.value)
 }
+
+const printPage = () => {
+  window.print()
+}
+
 const goToOwner = async (id: string) => {
   await router.push(`/form/input/owner/${id}`)
 }
@@ -64,9 +69,9 @@ onMounted(async () => {
   <div class="input-view" v-else>
     <div class="title">
       <div class="text">
-        <h1>Запрос «Истёкшая регистрация судов»</h1>
+        <h1>Истёкшая регистрация судов</h1>
         <p>Вывод информации о суднах, статус регистрации которых истёк</p>
-        <p v-if="filterByOwner || filterByType">Параметры: {{filterByType}}, {{filterByOwner}} <span @click="isFilterWindowOpen = true">Изменить</span></p>
+        <p v-if="filterByOwner || filterByType" class="parameters">Параметры: {{filterByType}}, {{filterByOwner}} <span @click="isFilterWindowOpen = true">Изменить</span></p>
         <p>Найдено записей: {{allShips.length}}</p>
       </div>
     </div>
@@ -113,6 +118,10 @@ onMounted(async () => {
       <button @click="reloadShips">
         <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
+      </button>
+      <button @click="printPage">
+        <img src="/icons/printing.png" alt="search"/>
+        Печать
       </button>
     </div>
   </div>

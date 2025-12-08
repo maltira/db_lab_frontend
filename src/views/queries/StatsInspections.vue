@@ -132,6 +132,11 @@ const reloadInspections = async () => {
 const goToShip = async (id: string) => {
   await router.push(`/form/input/ship/${id}`)
 }
+
+const printPage = () => {
+  window.print()
+}
+
 const goToInspection = async (id: string) => {
   await router.push(`/form/input/inspection/${id}`)
 }
@@ -169,9 +174,9 @@ onMounted(() => {
   <div class="input-view" v-else>
     <div class="title">
       <div class="text">
-        <h1>Запрос «Статистика по техосмотрам»</h1>
+        <h1>Статистика по техосмотрам</h1>
         <p>Вывод информации о проведенных техосмотрах</p>
-        <p>
+        <p class="parameters">
           Параметры: {{ filterByYear }}, {{ filterByMonth }}, {{ filterByDay }},
           {{ filterByShipNumber }} <span @click="isFilterWindowOpen = true">Изменить</span>
         </p>
@@ -217,6 +222,10 @@ onMounted(() => {
       <button @click="reloadInspections">
         <img src="/icons/reload.svg" alt="reload" />
         Обновить данные
+      </button>
+      <button @click="printPage">
+        <img src="/icons/printing.png" alt="search"/>
+        Печать
       </button>
     </div>
   </div>

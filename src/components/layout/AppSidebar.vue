@@ -111,29 +111,6 @@ const LogOut = async () => {
       </div>
       <p v-else-if="isFormsOpen && allForms.length === 0" class="empty_block">Здесь пусто</p>
     </div>
-    <div class="sidebar_block">
-      <div class="title" @click="toggleReports">
-        <h1>Отчёты</h1>
-        <img
-          src="/icons/arrow.png"
-          alt="arrow"
-          :style="{ transform: isReportsOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }"
-        />
-      </div>
-      <div class="block_items" v-if="isReportsOpen && allReports.length > 0">
-        <RouterLink
-          :to="r.route"
-          class="item"
-          v-for="r in allReports"
-          :key="r.id"
-          @click="selectElement('reports', r.id)"
-          :class="{ active: selectedRoute.block === 'reports' && selectedRoute.id === r.id }"
-        >
-          <p>{{ r.name }}</p>
-        </RouterLink>
-      </div>
-      <p v-else-if="isReportsOpen && allReports.length === 0" class="empty_block">Здесь пусто</p>
-    </div>
     <div class="user_block">
       <p class="name">{{ user?.name }}</p>
       <p class="role">{{ user?.is_admin ? 'Администратор' : 'Сотрудник' }}</p>

@@ -43,9 +43,6 @@ export const useSidebarStore = defineStore('sidebar', {
       { id: 13, route: '/form/data/skipper', name: "ФАД_Судоводители", access: true},
       { id: 14, route: '/form/data/queries', name: "Список запросов", access: false },
     ] as SidebarElement[],
-    allReports: [
-      { id: 1, route: "/report/reestr_ships", name: "Реестр судов", access: true },
-    ] as SidebarElement[],
     selectedRoute: { block: 'forms', id: 0 } as SelectedRoute,
   }),
 })
